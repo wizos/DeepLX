@@ -204,20 +204,20 @@ Configure API clients to use the pre-deployed instance:
 
 1. [Install Immersive Translate](https://immersivetranslate.com/download/)
 2. Go to developer settings and enable beta testing features
-3. Go to translation services and add custom translation service DeepLX, set API URL to: `https://dplx.xi-xu.me`
+3. Go to translation services and add custom translation service DeepLX, set API URL to: `https://dplx.xi-xu.me/translate`
 4. Set the maximum requests per second and the maximum text length per request to appropriate values (e.g., `80` and `5000`) to ensure stability and performance
 
 ### [Pot](https://github.com/pot-app/pot-desktop/blob/master/README_EN.md) (Open-source cross-platform Windows, macOS and Linux app)
 
 1. [Download and install Pot for your platform](https://github.com/pot-app/pot-desktop/releases/latest)
 2. Open Pot settings and navigate to service settings
-3. Configure DeepL service type as DeepLX and set custom URL to: `https://dplx.xi-xu.me`
+3. Configure DeepL service type as DeepLX and set custom URL to: `https://dplx.xi-xu.me/translate`
 
 ### [Bob](https://bobtranslate.com/) (Closed-source macOS app)
 
 1. [Download and install Bob from Mac App Store](https://apps.apple.com/app/id1630034110)
 2. Download and install [bob-plugin-deeplx](https://github.com/missuo/bob-plugin-deeplx) plugin
-3. Configure plugin to use `https://dplx.xi-xu.me` service address
+3. Configure plugin to use `https://dplx.xi-xu.me/translate`
 
 ## 🚀 Self-deployment
 
