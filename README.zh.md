@@ -204,20 +204,20 @@ except Exception as e:
 
 1. [安装沉浸式翻译](https://immersivetranslate.com/zh-Hans/download/)
 2. 进入开发者设置并开启 beta 测试特性
-3. 进入翻译服务添加自定义翻译服务 DeepLX，将 API URL 设置为：`https://dplx.xi-xu.me`
+3. 进入翻译服务添加自定义翻译服务 DeepLX，将 API URL 设置为：`https://dplx.xi-xu.me/translate`
 4. 将每秒最大请求数和每次请求最大文本长度设置为合适的值（例如 `80` 和 `5000`），以确保稳定性和性能
 
 ### [Pot](https://github.com/pot-app/pot-desktop)（开源跨平台 Windows、macOS 和 Linux 应用）
 
 1. [下载并安装适用于您平台的 Pot](https://github.com/pot-app/pot-desktop/releases/latest)
 2. 打开 Pot 设置并导航到服务设置
-3. 将 DeepL 服务类型配置为 DeepLX，并将自定义 URL 设置为：`https://dplx.xi-xu.me`
+3. 将 DeepL 服务类型配置为 DeepLX，并将自定义 URL 设置为：`https://dplx.xi-xu.me/translate`
 
 ### [Bob](https://bobtranslate.com/)（闭源 macOS 应用）
 
 1. [从 Mac App Store 下载并安装 Bob](https://apps.apple.com/cn/app/id1630034110)
 2. 下载并安装 [bob-plugin-deeplx](https://github.com/missuo/bob-plugin-deeplx) 插件
-3. 配置插件使用 `https://dplx.xi-xu.me` 服务地址
+3. 配置插件使用 `https://dplx.xi-xu.me/translate`
 
 ## 🚀 自部署
 
