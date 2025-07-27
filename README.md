@@ -547,7 +547,7 @@ This repository is licensed under the MIT License - see the [LICENSE](LICENSE) f
 
 <div align="center">
 
-**If this repository is helpful to you, please consider giving it a ⭐ Star!**
+**If this repository is helpful to you, please consider giving it a ⭐ star!**
 
 Made with ❤️ by [Xi Xu](https://xi-xu.me)
 

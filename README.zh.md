@@ -547,7 +547,7 @@ curl -X POST https://your-domain.workers.dev/debug \
 
 <div align="center">
 
-**如果这个存储库对您有帮助，请考虑给它一个 ⭐ Star！**
+**如果这个存储库对您有帮助，请考虑给它一个 ⭐ star！**
 
 Made with ❤️ by [Xi Xu](https://xi-xu.me)
 
