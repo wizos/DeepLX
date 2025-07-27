@@ -246,7 +246,7 @@ We follow [Semantic Versioning](https://semver.org/):
 
 ### Resources
 
-- [repository Documentation](README.md)
+- [Repository Documentation](README.md)
 - [API Reference](docs/api.md)
 - [Cloudflare Workers Documentation](https://developers.cloudflare.com/workers/)
 - [TypeScript Documentation](https://www.typescriptlang.org/docs/)
