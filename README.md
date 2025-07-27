@@ -8,6 +8,10 @@
 
 Currently, the best serverless implementation of [DeepLX](https://github.com/OwO-Network/DeepLX), optimized for Cloudflare Workers. Through intelligent proxy endpoint rotation, advanced rate limiting algorithms, and circuit breaker mechanisms, it almost completely avoids HTTP 429 errors, providing higher request rate limits and lower network round-trip times than the DeepL API.
 
+## 🆓 **Completely FREE Alternative to DeepL API**
+
+**Unlike the paid DeepL API, DeepLX is completely free to use** - no API keys, no subscription fees, no usage limits. Simply deploy once and enjoy unlimited translation requests without any cost concerns.
+
 ## ✨ Features & Performance Advantages
 
 ### 🚀 Performance Advantages

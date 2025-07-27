@@ -8,6 +8,10 @@
 
 目前 [DeepLX](https://github.com/OwO-Network/DeepLX) 的最佳无服务器实现，专为 Cloudflare Workers 优化设计。通过智能代理端点轮换、高级限流算法和熔断器机制，几乎完全避免了 HTTP 429 错误，提供比 DeepL API 更高的请求速率限制和更低的网络往返时间。
 
+## 🆓 **相较于 DeepL API 完全免费**
+
+**与付费的 DeepL API 不同，DeepLX 完全免费使用** - 无需 API 密钥、无订阅费用、无使用限制。只需部署一次，即可享受无限制的翻译请求，无需担心任何费用问题。
+
 ## ✨ 特性与性能优势
 
 ### 🚀 性能优势
