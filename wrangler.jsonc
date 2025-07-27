@@ -27,7 +27,6 @@
   "placement": {
     "mode": "smart"
   },
-  "preview_url": false,
   "triggers": {
     "crons": ["*/5 * * * *"]
   },
