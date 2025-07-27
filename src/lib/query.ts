@@ -10,11 +10,6 @@ import {
 } from "./config";
 import { API_URL, REQUEST_ALTERNATIVES } from "./const";
 import { createErrorResponse } from "./errorHandler";
-import {
-  containsHtmlContent,
-  preserveHtmlContent,
-  restoreHtmlContent,
-} from "./htmlUtils";
 import { generateBrowserFingerprint, selectProxy } from "./proxyManager";
 import { checkCombinedRateLimit } from "./rateLimit";
 import { isRetryableError, RetryOptions, retryWithBackoff } from "./retryLogic";
@@ -279,7 +274,7 @@ function buildRequestBody(data: RequestParams) {
  */
 async function query(
   params: RequestParams,
-  config?: Config & { env?: Env }
+  config?: Config & { env?: any }
 ): Promise<ResponseParams> {
   if (!params?.text) {
     return createStandardResponse(
@@ -289,20 +284,6 @@ async function query(
       normalizeLanguageCode(params?.source_lang || "auto"),
       normalizeLanguageCode(params?.target_lang || "en")
     );
-  }
-
-  // Check if text contains HTML content and preserve it
-  const hasHtmlContent = containsHtmlContent(params.text);
-  let processedParams = params;
-  let htmlPreservation: any = null;
-
-  if (hasHtmlContent) {
-    const preservation = preserveHtmlContent(params.text);
-    htmlPreservation = preservation.preserved;
-    processedParams = {
-      ...params,
-      text: preservation.processedText,
-    };
   }
 
   const retryOptions: RetryOptions = {
@@ -339,7 +320,7 @@ async function query(
         const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
 
         try {
-          const requestBody = buildRequestBody(processedParams);
+          const requestBody = buildRequestBody(params);
 
           const response = await fetch(endpoint, {
             headers: {
@@ -455,12 +436,7 @@ async function query(
         throw error;
       }
 
-      let translatedText = result.result.texts[0].text;
-
-      // Restore HTML content if it was preserved
-      if (hasHtmlContent && htmlPreservation) {
-        translatedText = restoreHtmlContent(translatedText, htmlPreservation);
-      }
+      const translatedText = result.result.texts[0].text;
 
       return createStandardResponse(
         200,

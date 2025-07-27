@@ -9,7 +9,6 @@ import { query } from "./query";
 export * from "./cache";
 export * from "./circuitBreaker";
 export * from "./errorHandler";
-export * from "./htmlUtils";
 export * from "./proxyManager";
 export * from "./rateLimit";
 export * from "./retryLogic";
