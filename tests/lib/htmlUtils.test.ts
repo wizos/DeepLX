@@ -36,7 +36,7 @@ describe("HTML Utils", () => {
       expect(processedText).not.toContain("</code>");
 
       // Should contain placeholders
-      expect(processedText).toContain("__DEEPLX_PRESERVE_");
+      expect(processedText).toContain("ĦĐŁXĦ");
 
       // Restore should bring back original content
       const restoredText = restoreHtmlContent(processedText, preserved);
@@ -49,7 +49,7 @@ describe("HTML Utils", () => {
 
       // The processed text should not contain colons
       expect(processedText).not.toContain(":");
-      expect(processedText).toContain("__DEEPLX_PRESERVE_");
+      expect(processedText).toContain("ĦĐŁXĦ");
 
       // Restore should bring back original colon
       const restoredText = restoreHtmlContent(processedText, preserved);
@@ -66,7 +66,7 @@ describe("HTML Utils", () => {
       expect(processedText).not.toContain(":");
 
       // Should contain placeholders
-      expect(processedText).toContain("__DEEPLX_PRESERVE_");
+      expect(processedText).toContain("ĦĐŁXĦ");
 
       // Restore should bring back all original content
       const restoredText = restoreHtmlContent(processedText, preserved);
@@ -91,6 +91,21 @@ describe("HTML Utils", () => {
       // Should restore original colon and fix any Chinese colons
       expect(restoredText).toContain("Hello: 世界:extra");
       expect(restoredText).not.toContain("：");
+    });
+
+    it("should handle placeholders being converted to lowercase", () => {
+      const originalText = "<strong>A B </strong>";
+      const { processedText, preserved } = preserveHtmlContent(originalText);
+
+      // Simulate what happens when placeholders get converted to lowercase
+      const lowercasePlaceholders = processedText.toLowerCase();
+
+      const restoredText = restoreHtmlContent(lowercasePlaceholders, preserved);
+
+      // Should restore the original HTML tags correctly
+      expect(restoredText).toBe("<strong>a b </strong>");
+      expect(restoredText).toContain("<strong>");
+      expect(restoredText).toContain("</strong>");
     });
   });
 

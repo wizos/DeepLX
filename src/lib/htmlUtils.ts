@@ -17,9 +17,10 @@ const HTML_PATTERNS = {
 
 /**
  * Placeholder patterns for temporary replacement
+ * Using a format that's less likely to be modified by translation services
  */
-const PLACEHOLDER_PREFIX = "__DEEPLX_PRESERVE_";
-const PLACEHOLDER_SUFFIX = "__";
+const PLACEHOLDER_PREFIX = "ĦĐŁXĦ";
+const PLACEHOLDER_SUFFIX = "ĦĐŁXĦ";
 
 /**
  * Storage for preserved content during translation
@@ -39,7 +40,10 @@ function createPlaceholder(
   content: string,
   preserved: PreservedContent
 ): string {
-  const placeholder = `${PLACEHOLDER_PREFIX}${preserved.counter}${PLACEHOLDER_SUFFIX}`;
+  // Use a more unique format that's less likely to be translated
+  const placeholder = `${PLACEHOLDER_PREFIX}${preserved.counter
+    .toString()
+    .padStart(3, "0")}${PLACEHOLDER_SUFFIX}`;
   preserved.placeholders.set(placeholder, content);
   preserved.counter++;
   return placeholder;
@@ -93,12 +97,14 @@ export function restoreHtmlContent(
 ): string {
   let restoredText = translatedText;
 
-  // Restore all preserved content
+  // Restore all preserved content - handle case-insensitive matching
   for (const [placeholder, originalContent] of preserved.placeholders) {
-    restoredText = restoredText.replace(
-      new RegExp(placeholder, "g"),
-      originalContent
+    // Create case-insensitive regex to handle lowercase conversion
+    const regex = new RegExp(
+      placeholder.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+      "gi"
     );
+    restoredText = restoredText.replace(regex, originalContent);
   }
 
   // Additional cleanup: fix any remaining Chinese colons that might have been introduced
