@@ -505,7 +505,7 @@ curl -X POST https://your-domain.workers.dev/debug \
 ## 📞 联系方式
 
 - **作者**: [Xi Xu](https://xi-xu.me)
-- **邮箱**: [联系邮箱](mailto:contact@xi-xu.me)
+- **邮箱**: [联系邮箱](mailto:i@xi-xu.me)
 - **赞助**: [赞助链接](https://xi-xu.me/#sponsorships)
 
 ## ⚠️ 免责声明
