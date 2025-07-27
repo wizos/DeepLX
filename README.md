@@ -31,7 +31,7 @@ DeepLX has significant improvements in performance and stability compared to the
 
 #### Technical Advantages
 
-- **Intelligent Load Balancing**: 10 proxy endpoints automatically distribute requests
+- **Intelligent Load Balancing**: Multiple proxy endpoints automatically distribute requests
 - **Dynamic Rate Limiting Algorithm**: Automatically adjusts rate limits based on proxy count
 - **Dual-layer Caching System**: Memory cache + KV storage reduces duplicate requests
 - **Circuit Breaker Mechanism**: Automatic failover for failed endpoints ensures service continuity
