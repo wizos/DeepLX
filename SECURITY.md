@@ -136,7 +136,7 @@ We take security vulnerabilities seriously. If you discover a security issue, pl
 
 #### 1. **DO NOT** create a public GitHub issue
 
-#### 2. Send details to: [contact@xi-xu.me](mailto:contact@xi-xu.me)
+#### 2. Send details to: [i@xi-xu.me](mailto:i@xi-xu.me)
 
 #### 3. Include the following information
 
@@ -261,7 +261,7 @@ function validateTranslationRequest(params: any): boolean {
 
 For critical security issues requiring immediate attention:
 
-- **Email**: [contact@xi-xu.me](mailto:contact@xi-xu.me)
+- **Email**: [i@xi-xu.me](mailto:i@xi-xu.me)
 - **Subject**: `[URGENT SECURITY] DeepLX Critical Vulnerability`
 
 ---
