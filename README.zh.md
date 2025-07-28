@@ -204,18 +204,30 @@ except Exception as e:
 
 配置 API 客户端以使用预部署实例：
 
-### [沉浸式翻译](https://immersivetranslate.com/zh-Hans/)（闭源浏览器扩展）
+### [DeepLX App](https://github.com/xixu-me/DeepLX-App)（开源 web 应用）
 
-1. [安装沉浸式翻译](https://immersivetranslate.com/zh-Hans/download/)
-2. 进入开发者设置并开启 beta 测试特性
-3. 进入翻译服务添加自定义翻译服务 DeepLX，将 API URL 设置为：`https://dplx.xi-xu.me/translate`
-4. 将每秒最大请求数和每次请求最大文本长度设置为合适的值（例如 `80` 和 `5000`），以确保稳定性和性能
+一个现代化、免费的基于 web 的翻译应用，由 DeepLX API 驱动。功能包括：
+
+- 支持多语言自动检测
+- 输入时自动翻译
+- 翻译历史和语言切换
+- 适配所有设备的响应式设计
+- RTL 语言支持
+
+**在线演示**：[https://deeplx.xi-xu.me](https://deeplx.xi-xu.me)
 
 ### [Pot](https://github.com/pot-app/pot-desktop)（开源跨平台 Windows、macOS 和 Linux 应用）
 
 1. [下载并安装适用于您平台的 Pot](https://github.com/pot-app/pot-desktop/releases/latest)
 2. 打开 Pot 设置并导航到服务设置
 3. 将 DeepL 服务类型配置为 DeepLX，并将自定义 URL 设置为：`https://dplx.xi-xu.me/translate`
+
+### [沉浸式翻译](https://immersivetranslate.com/zh-Hans/)（闭源浏览器扩展）
+
+1. [安装沉浸式翻译](https://immersivetranslate.com/zh-Hans/download/)
+2. 进入开发者设置并开启 beta 测试特性
+3. 进入翻译服务添加自定义翻译服务 DeepLX，将 API URL 设置为：`https://dplx.xi-xu.me/translate`
+4. 将每秒最大请求数和每次请求最大文本长度设置为合适的值（例如 `80` 和 `5000`），以确保稳定性和性能
 
 ### [Bob](https://bobtranslate.com/)（闭源 macOS 应用）
 

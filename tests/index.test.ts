@@ -1,8 +1,8 @@
 /**
- * Tests for main application endpoints
+ * Tests for main app endpoints
  */
 
-// Mock the main application
+// Mock the main app
 jest.mock("../src/lib", () => ({
   clearMemoryCache: jest.fn(),
   generateCacheKey: jest.fn().mockReturnValue("cache:test-key"),
@@ -29,7 +29,7 @@ jest.mock("../src/lib/performance", () => ({
     .mockReturnValue({ requests: 100, avgResponseTime: 250 }),
 }));
 
-describe("Main Application", () => {
+describe("Main App", () => {
   let app: any;
   let mockEnv: Env;
 

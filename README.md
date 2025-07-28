@@ -204,18 +204,30 @@ except Exception as e:
 
 Configure API clients to use the pre-deployed instance:
 
-### [Immersive Translate](https://immersivetranslate.com/) (Closed-source browser extension)
+### [DeepLX App](https://github.com/xixu-me/DeepLX-App) (Open-source web app)
 
-1. [Install Immersive Translate](https://immersivetranslate.com/download/)
-2. Go to developer settings and enable beta testing features
-3. Go to translation services and add custom translation service DeepLX, set API URL to: `https://dplx.xi-xu.me/translate`
-4. Set the maximum requests per second and the maximum text length per request to appropriate values (e.g., `80` and `5000`) to ensure stability and performance
+A modern, free web-based translation app powered by DeepLX API. Features include:
+
+- Multi-language auto-detection support
+- Real-time translation as you type
+- Translation history and language switching
+- Responsive design for all devices
+- RTL language support
+
+**Live Demo**: [https://deeplx.xi-xu.me](https://deeplx.xi-xu.me)
 
 ### [Pot](https://github.com/pot-app/pot-desktop/blob/master/README_EN.md) (Open-source cross-platform Windows, macOS and Linux app)
 
 1. [Download and install Pot for your platform](https://github.com/pot-app/pot-desktop/releases/latest)
 2. Open Pot settings and navigate to service settings
 3. Configure DeepL service type as DeepLX and set custom URL to: `https://dplx.xi-xu.me/translate`
+
+### [Immersive Translate](https://immersivetranslate.com/) (Closed-source browser extension)
+
+1. [Install Immersive Translate](https://immersivetranslate.com/download/)
+2. Go to developer settings and enable beta testing features
+3. Go to translation services and add custom translation service DeepLX, set API URL to: `https://dplx.xi-xu.me/translate`
+4. Set the maximum requests per second and the maximum text length per request to appropriate values (e.g., `80` and `5000`) to ensure stability and performance
 
 ### [Bob](https://bobtranslate.com/) (Closed-source macOS app)
 

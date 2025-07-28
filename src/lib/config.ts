@@ -1,5 +1,5 @@
 /**
- * Configuration constants for the DeepLX application
+ * Configuration constants for the DeepLX app
  * Centralizes all configuration values for easy maintenance and consistency
  */
 

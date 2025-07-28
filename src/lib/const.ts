@@ -1,5 +1,5 @@
 /**
- * Application constants for DeepLX translation service
+ * App constants for DeepLX translation service
  * Contains API endpoints, language definitions, and other immutable values
  */
 

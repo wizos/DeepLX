@@ -22,7 +22,7 @@ import {
 import { createStandardResponse } from "./lib/types";
 
 /**
- * Initialize Hono application with environment bindings
+ * Initialize Hono app with environment bindings
  */
 const app = new Hono<{ Bindings: Env }>();
 

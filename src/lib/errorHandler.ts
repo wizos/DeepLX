@@ -127,7 +127,7 @@ export function logError(
 
 /**
  * Create standardized error response for API endpoints
- * Provides consistent error response format across the application
+ * Provides consistent error response format across the app
  * @param error The error that occurred
  * @param context Optional context about where the error occurred
  * @returns Object containing the response data and HTTP status code
