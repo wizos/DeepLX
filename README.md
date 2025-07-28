@@ -504,11 +504,11 @@ We welcome all forms of contributions! Please check the [Contributing Guide](CON
 
 ## 🌟 Star History
 
-<a href="https://www.star-history.com/#xixu-me/Xget&Date">
+<a href="https://www.star-history.com/#xixu-me/DeepLX&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=xixu-me/Xget&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=xixu-me/Xget&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=xixu-me/Xget&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=xixu-me/DeepLX&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=xixu-me/DeepLX&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=xixu-me/DeepLX&type=Date" />
  </picture>
 </a>
 
