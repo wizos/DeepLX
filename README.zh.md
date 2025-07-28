@@ -504,7 +504,13 @@ curl -X POST https://your-domain.workers.dev/debug \
 
 ## 🌟 Star 历史
 
-[![Star History Chart](https://api.star-history.com/svg?repos=xixu-me/DeepLX&type=Date)](https://star-history.com/#xixu-me/DeepLX&Date)
+<a href="https://www.star-history.com/#xixu-me/Xget&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=xixu-me/Xget&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=xixu-me/Xget&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=xixu-me/Xget&type=Date" />
+ </picture>
+</a>
 
 ## 📞 联系方式
 
