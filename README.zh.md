@@ -220,14 +220,21 @@ except Exception as e:
 
 1. [下载并安装适用于您平台的 Pot](https://github.com/pot-app/pot-desktop/releases/latest)
 2. 打开 Pot 设置并导航到服务设置
-3. 将 DeepL 服务类型配置为 DeepLX，并将自定义 URL 设置为：`https://dplx.xi-xu.me/translate`
+3. 将 DeepL 服务类型配置为 DeepLX，并将自定义 URL 配置为 `https://dplx.xi-xu.me/translate`
+
+### [Zotero](https://www.zotero.org/)（开源文献管理应用）
+
+1. [下载并安装适用于您平台的 Zotero](https://www.zotero.org/download/)
+2. 下载并安装 [Translate for Zotero](https://github.com/windingwind/zotero-pdf-translate) 插件
+3. 打开 Zotero 设置并导航到翻译中的服务部分
+4. 将翻译服务配置为 DeepLX（API），并点击配置按钮后将接口配置为 `https://dplx.xi-xu.me/translate`
 
 ### [沉浸式翻译](https://immersivetranslate.com/zh-Hans/)（闭源浏览器扩展）
 
 1. [安装沉浸式翻译](https://immersivetranslate.com/zh-Hans/download/)
 2. 进入开发者设置并开启 beta 测试特性
-3. 进入翻译服务添加自定义翻译服务 DeepLX，将 API URL 设置为：`https://dplx.xi-xu.me/translate`
-4. 将每秒最大请求数和每次请求最大文本长度设置为合适的值（例如 `80` 和 `5000`），以确保稳定性和性能
+3. 进入翻译服务添加自定义翻译服务 DeepLX，将 API URL 配置为 `https://dplx.xi-xu.me/translate`
+4. 将每秒最大请求数和每次请求最大文本长度配置为合适的值（例如 `80` 和 `5000`），以确保稳定性和性能
 
 ### [Bob](https://bobtranslate.com/)（闭源 macOS 应用）
 

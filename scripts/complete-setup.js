@@ -220,7 +220,6 @@ function showSummary() {
   log("  npm run test:watch       # Run tests in watch mode", "cyan");
 
   console.log("\n" + colorize("📚 Documentation:", "bright"));
-  log("  • tests/README.md        # Comprehensive test docs", "cyan");
   log("  • TESTING.md             # Quick start guide", "cyan");
   log("  • DEPLOYMENT_GUIDE.md    # Deployment help", "cyan");
   log("  • README_TEST_SUITE.md   # Complete overview", "cyan");
@@ -229,7 +228,6 @@ function showSummary() {
   log('  1. Run "npm test" to execute all tests', "magenta");
   log('  2. Check coverage with "npm run test:coverage"', "magenta");
   log('  3. Use "npm run test:watch" for development', "magenta");
-  log("  4. Review the documentation in tests/README.md", "magenta");
 
   console.log(
     "\n" +
