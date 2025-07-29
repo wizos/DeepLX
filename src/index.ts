@@ -27,26 +27,17 @@ import { createStandardResponse } from "./lib/types";
 const app = new Hono<{ Bindings: Env }>();
 
 /**
- * Worker export configuration
- * Defines the main fetch handler and scheduled event handler
- */
-export default {
-  fetch: app.fetch,
-  scheduled,
-};
-
-/**
  * Scheduled event handler for periodic maintenance tasks
  * Executes every 5 minutes as configured in wrangler.jsonc
  * @param event The scheduled event object
  * @param env Environment bindings
  * @param ctx Execution context for background tasks
  */
-async function scheduled(
+function scheduled(
   event: ScheduledEvent,
   env: Env,
   ctx: ExecutionContext
-): Promise<void> {
+): void {
   ctx.waitUntil(handleScheduled(event, env));
 }
 
@@ -60,6 +51,17 @@ async function handleScheduled(event: ScheduledEvent, env: Env): Promise<void> {
   // Clear the in-memory cache every 5 minutes to prevent memory leaks
   clearMemoryCache();
 }
+
+/**
+ * Worker export configuration
+ * Defines the main fetch handler and scheduled event handler
+ */
+const worker = {
+  fetch: app.fetch,
+  scheduled,
+};
+
+export default worker;
 
 /**
  * API Route Definitions
