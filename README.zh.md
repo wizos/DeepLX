@@ -229,6 +229,10 @@ except Exception as e:
 3. 打开 Zotero 设置并导航到翻译中的服务部分
 4. 将翻译服务配置为 DeepLX（API），并点击配置按钮后将接口配置为 `https://dplx.xi-xu.me/translate`
 
+### [PDFMathTranslate（pdf2zh）](https://github.com/Byaidu/PDFMathTranslate)（开源 PDF 文档翻译工具）
+
+参考[高级选项](https://github.com/Byaidu/PDFMathTranslate/blob/main/docs/README_zh-CN.md#%E9%AB%98%E7%BA%A7%E9%80%89%E9%A1%B9)和[使用不同的服务进行翻译](https://github.com/Byaidu/PDFMathTranslate/blob/main/docs/ADVANCED.md#translate-with-different-services)。
+
 ### [沉浸式翻译](https://immersivetranslate.com/zh-Hans/)（闭源浏览器扩展）
 
 1. [安装沉浸式翻译](https://immersivetranslate.com/zh-Hans/download/)

@@ -229,6 +229,10 @@ A modern, free web-based translation app powered by the DeepLX API. Features inc
 3. Open Zotero settings and navigate to the Services section under Translation
 4. Configure the translation service as DeepLX (API) and set the endpoint to `https://dplx.xi-xu.me/translate` after clicking the config button
 
+### [PDFMathTranslate（pdf2zh）](https://github.com/Byaidu/PDFMathTranslate)（Open-source PDF document translation tool）
+
+Refer to [Advanced Options](https://github.com/Byaidu/PDFMathTranslate?tab=readme-ov-file#advanced-options) and [Translate with different services](https://github.com/Byaidu/PDFMathTranslate/blob/main/docs/ADVANCED.md#translate-with-different-services).
+
 ### [Immersive Translate](https://immersivetranslate.com/) (Closed-source browser extension)
 
 1. [Install Immersive Translate](https://immersivetranslate.com/download/)
