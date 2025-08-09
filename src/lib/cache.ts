@@ -25,13 +25,15 @@ const CACHE_TTL = 3600; // 1 hour in seconds
 export function generateCacheKey(
   text: string,
   sourceLang: string,
-  targetLang: string
+  targetLang: string,
+  provider?: string
 ): string {
   // Normalize language codes to uppercase for consistent caching
   const normalizedSourceLang =
     sourceLang === "auto" ? "auto" : sourceLang.toUpperCase();
   const normalizedTargetLang = targetLang.toUpperCase();
-  const content = `${text}:${normalizedSourceLang}:${normalizedTargetLang}`;
+  const providerSuffix = provider ? `:${provider}` : "";
+  const content = `${text}:${normalizedSourceLang}:${normalizedTargetLang}${providerSuffix}`;
 
   // Use crypto.subtle to generate a hash instead of btoa for Unicode safety
   try {

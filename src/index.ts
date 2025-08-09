@@ -19,6 +19,7 @@ import {
   handleCORSPreflight,
   validateLanguageCode,
 } from "./lib/security";
+import { translateWithGoogle } from "./lib/services/googleTranslate";
 import { createStandardResponse } from "./lib/types";
 
 /**
@@ -64,6 +65,137 @@ const worker = {
 export default worker;
 
 /**
+ * Common translation handler function
+ * Processes translation requests for both DeepL and Google Translate
+ * @param c - Hono context
+ * @param provider - Translation provider ('deepl' or 'google')
+ * @returns Translation response
+ */
+async function handleTranslation(c: any, provider: "deepl" | "google") {
+  const env = c.env;
+  const clientIP = getSecureClientIP(c.req.raw) || "unknown";
+
+  try {
+    // Parse request parameters with better error handling
+    let params;
+    try {
+      params = await c.req.json();
+    } catch (parseError) {
+      return c.json(createStandardResponse(400, null), 400);
+    }
+
+    // Enhanced parameter validation with input sanitization
+    if (!params || typeof params !== "object") {
+      return c.json(createStandardResponse(400, null), 400);
+    }
+
+    if (!params.text || typeof params.text !== "string") {
+      return c.json(createStandardResponse(400, null), 400);
+    }
+
+    // Basic text validation
+    let sanitizedText;
+    try {
+      sanitizedText = params.text;
+      if (sanitizedText.length > PAYLOAD_LIMITS.MAX_TEXT_LENGTH) {
+        sanitizedText = sanitizedText.slice(0, PAYLOAD_LIMITS.MAX_TEXT_LENGTH);
+      }
+    } catch (sanitizeError) {
+      return c.json(createStandardResponse(400, null), 400);
+    }
+
+    // Validate text length
+    if (!sanitizedText) {
+      return c.json(createStandardResponse(400, null), 400);
+    }
+
+    // Validate and sanitize language parameters
+    const sourceLang = params.source_lang
+      ? validateLanguageCode(params.source_lang)
+      : "auto";
+    const targetLang = params.target_lang
+      ? validateLanguageCode(params.target_lang)
+      : "en";
+
+    if (!sourceLang || !targetLang) {
+      return c.json(createStandardResponse(400, null), 400);
+    }
+
+    // Check cache first for faster response
+    const normalizedSourceLang = normalizeLanguageCode(sourceLang);
+    const normalizedTargetLang = normalizeLanguageCode(targetLang);
+    const cacheKey = generateCacheKey(
+      sanitizedText,
+      normalizedSourceLang,
+      normalizedTargetLang,
+      provider
+    );
+    const cached = await getCachedTranslation(cacheKey, env);
+
+    if (cached) {
+      return c.json(
+        createStandardResponse(
+          200,
+          cached.data,
+          cached.id || Math.floor(Math.random() * 10000000000),
+          cached.source_lang,
+          cached.target_lang
+        )
+      );
+    }
+
+    // Prepare validated parameters for translation
+    const validatedParams = {
+      text: sanitizedText,
+      source_lang: normalizedSourceLang,
+      target_lang: normalizedTargetLang,
+    };
+
+    let result;
+
+    // Choose translation provider
+    if (provider === "google") {
+      result = await translateWithGoogle(validatedParams, {
+        env,
+        clientIP,
+      });
+    } else {
+      // Use DeepL as default
+      result = await query(validatedParams, {
+        env,
+        clientIP,
+      });
+    }
+
+    // Cache successful translations
+    if (result.code === 200 && result.data) {
+      await setCachedTranslation(
+        cacheKey,
+        {
+          data: result.data,
+          timestamp: Date.now(),
+          source_lang:
+            result.source_lang || validatedParams.source_lang.toUpperCase(),
+          target_lang:
+            result.target_lang || validatedParams.target_lang.toUpperCase(),
+          id: result.id,
+        },
+        env
+      );
+    }
+
+    return c.json(result, result.code as any);
+  } catch (error) {
+    const errorResponse = createErrorResponse(error, {
+      endpoint: `/${provider}`,
+      clientIP,
+    });
+
+    return c.json(errorResponse.response, errorResponse.httpStatus as any);
+  }
+}
+
+/**
  * API Route Definitions
  * Defines all available endpoints and their handlers
  */
@@ -72,6 +204,8 @@ app
   .options("*", (c) => handleCORSPreflight(c))
 
   .get("/translate", (c) => c.text("Please use POST method :)"))
+  .get("/deepl", (c) => c.text("Please use POST method :)"))
+  .get("/google", (c) => c.text("Please use POST method :)"))
 
   /**
    * Debug endpoint for request format validation and troubleshooting
@@ -175,122 +309,26 @@ app
   /**
    * Main translation endpoint with comprehensive features
    * Handles single text translation with rate limiting, caching, and error handling
-   * POST /translate
+   * POST /translate - Uses DeepL (legacy endpoint)
    */
   .post("/translate", async (c) => {
-    const env = c.env;
-    const clientIP = getSecureClientIP(c.req.raw) || "unknown";
+    return handleTranslation(c, "deepl");
+  })
 
-    try {
-      // Parse request parameters with better error handling
-      let params;
-      try {
-        params = await c.req.json();
-      } catch (parseError) {
-        return c.json(createStandardResponse(400, null), 400);
-      }
+  /**
+   * DeepL translation endpoint
+   * POST /deepl - Uses DeepL translation service
+   */
+  .post("/deepl", async (c) => {
+    return handleTranslation(c, "deepl");
+  })
 
-      // Enhanced parameter validation with input sanitization
-      if (!params || typeof params !== "object") {
-        return c.json(createStandardResponse(400, null), 400);
-      }
-
-      if (!params.text || typeof params.text !== "string") {
-        return c.json(createStandardResponse(400, null), 400);
-      }
-
-      // Basic text validation
-      let sanitizedText;
-      try {
-        sanitizedText = params.text;
-        if (sanitizedText.length > PAYLOAD_LIMITS.MAX_TEXT_LENGTH) {
-          sanitizedText = sanitizedText.slice(
-            0,
-            PAYLOAD_LIMITS.MAX_TEXT_LENGTH
-          );
-        }
-      } catch (sanitizeError) {
-        return c.json(createStandardResponse(400, null), 400);
-      }
-
-      // Validate text length
-      if (!sanitizedText) {
-        return c.json(createStandardResponse(400, null), 400);
-      }
-
-      // Validate and sanitize language parameters
-      const sourceLang = params.source_lang
-        ? validateLanguageCode(params.source_lang)
-        : "auto";
-      const targetLang = params.target_lang
-        ? validateLanguageCode(params.target_lang)
-        : "en";
-
-      if (!sourceLang || !targetLang) {
-        return c.json(createStandardResponse(400, null), 400);
-      }
-
-      // Check cache first for faster response
-      const normalizedSourceLang = normalizeLanguageCode(sourceLang);
-      const normalizedTargetLang = normalizeLanguageCode(targetLang);
-      const cacheKey = generateCacheKey(
-        sanitizedText,
-        normalizedSourceLang,
-        normalizedTargetLang
-      );
-      const cached = await getCachedTranslation(cacheKey, env);
-
-      if (cached) {
-        return c.json(
-          createStandardResponse(
-            200,
-            cached.data,
-            cached.id || Math.floor(Math.random() * 10000000000),
-            cached.source_lang,
-            cached.target_lang
-          )
-        );
-      }
-
-      // Prepare validated parameters for translation
-      const validatedParams = {
-        text: sanitizedText,
-        source_lang: normalizedSourceLang,
-        target_lang: normalizedTargetLang,
-      };
-
-      // Process translation with comprehensive rate limiting built-in
-      const result = await query(validatedParams, {
-        env,
-        clientIP, // Pass client IP to query function
-      });
-
-      // Cache successful translations
-      if (result.code === 200 && result.data) {
-        await setCachedTranslation(
-          cacheKey,
-          {
-            data: result.data,
-            timestamp: Date.now(),
-            source_lang:
-              result.source_lang || validatedParams.source_lang.toUpperCase(),
-            target_lang:
-              result.target_lang || validatedParams.target_lang.toUpperCase(),
-            id: result.id,
-          },
-          env
-        );
-      }
-
-      return c.json(result, result.code as any);
-    } catch (error) {
-      const errorResponse = createErrorResponse(error, {
-        endpoint: "/translate",
-        clientIP,
-      });
-
-      return c.json(errorResponse.response, errorResponse.httpStatus as any);
-    }
+  /**
+   * Google Translate endpoint
+   * POST /google - Uses Google Translate service
+   */
+  .post("/google", async (c) => {
+    return handleTranslation(c, "google");
   })
 
   /**
