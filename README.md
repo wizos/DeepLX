@@ -132,7 +132,33 @@ graph TB
 
 ## 📦 Quick Start
 
-### cURL Example
+### cURL Examples
+
+#### DeepL Translation (Recommended)
+
+```bash
+curl -X POST https://dplx.xi-xu.me/deepl \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Hello, world!",
+    "source_lang": "EN",
+    "target_lang": "ZH"
+  }'
+```
+
+#### Google Translate
+
+```bash
+curl -X POST https://dplx.xi-xu.me/google \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Hello, world!",
+    "source_lang": "EN",
+    "target_lang": "ZH"
+  }'
+```
+
+#### Legacy Endpoint (DeepL)
 
 ```bash
 curl -X POST https://dplx.xi-xu.me/translate \
@@ -144,11 +170,13 @@ curl -X POST https://dplx.xi-xu.me/translate \
   }'
 ```
 
-### JavaScript Example
+### JavaScript Examples
+
+#### Using DeepL Translation
 
 ```javascript
-async function translate(text, sourceLang = 'auto', targetLang = 'zh') {
-  const response = await fetch('https://dplx.xi-xu.me/translate', {
+async function translateWithDeepL(text, sourceLang = 'auto', targetLang = 'zh') {
+  const response = await fetch('https://dplx.xi-xu.me/deepl', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -165,19 +193,47 @@ async function translate(text, sourceLang = 'auto', targetLang = 'zh') {
 }
 
 // Usage example
-translate('Hello, world!', 'en', 'zh')
+translateWithDeepL('Hello, world!', 'en', 'zh')
   .then(result => console.log(result))
   .catch(error => console.error(error));
 ```
 
-### Python Example
+#### Using Google Translate
+
+```javascript
+async function translateWithGoogle(text, sourceLang = 'auto', targetLang = 'zh') {
+  const response = await fetch('https://dplx.xi-xu.me/google', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      text: text,
+      source_lang: sourceLang,
+      target_lang: targetLang
+    })
+  });
+  
+  const result = await response.json();
+  return result.data;
+}
+
+// Usage example
+translateWithGoogle('Hello, world!', 'en', 'zh')
+  .then(result => console.log(result))
+  .catch(error => console.error(error));
+```
+
+### Python Examples
+
+#### Using DeepL Translation
 
 ```python
 import requests
 import json
 
-def translate(text, source_lang='auto', target_lang='zh'):
-    url = 'https://dplx.xi-xu.me/translate'
+def translate_with_deepl(text, source_lang='auto', target_lang='zh'):
+    url = 'https://dplx.xi-xu.me/deepl'
     data = {
         'text': text,
         'source_lang': source_lang,
@@ -194,7 +250,37 @@ def translate(text, source_lang='auto', target_lang='zh'):
 
 # Usage example
 try:
-    result = translate('Hello, world!', 'en', 'zh')
+    result = translate_with_deepl('Hello, world!', 'en', 'zh')
+    print(result)
+except Exception as e:
+    print(f"Error: {e}")
+```
+
+#### Using Google Translate
+
+```python
+import requests
+import json
+
+def translate_with_google(text, source_lang='auto', target_lang='zh'):
+    url = 'https://dplx.xi-xu.me/google'
+    data = {
+        'text': text,
+        'source_lang': source_lang,
+        'target_lang': target_lang
+    }
+    
+    response = requests.post(url, json=data)
+    result = response.json()
+    
+    if result['code'] == 200:
+        return result['data']
+    else:
+        raise Exception(f"Translation failed: {result.get('message', 'Unknown error')}")
+
+# Usage example
+try:
+    result = translate_with_google('Hello, world!', 'en', 'zh')
     print(result)
 except Exception as e:
     print(f"Error: {e}")
@@ -220,14 +306,14 @@ A modern, free web-based translation app powered by the DeepLX API. Features inc
 
 1. [Download and install Pot for your platform](https://github.com/pot-app/pot-desktop/releases/latest)
 2. Open Pot settings and navigate to Service Settings
-3. Configure the DeepL service type as DeepLX and set the custom URL to `https://dplx.xi-xu.me/translate`
+3. Configure the DeepL service type as DeepLX and set the custom URL to `https://dplx.xi-xu.me/deepl`
 
 ### [Zotero](https://www.zotero.org/) (Open-source reference management app)
 
 1. [Download and install Zotero for your platform](https://www.zotero.org/download/)
 2. Download and install the [Translate for Zotero](https://github.com/windingwind/zotero-pdf-translate) plugin
 3. Open Zotero settings and navigate to the Services section under Translation
-4. Configure the translation service as DeepLX (API) and set the endpoint to `https://dplx.xi-xu.me/translate` after clicking the config button
+4. Configure the translation service as DeepLX (API) and set the endpoint to `https://dplx.xi-xu.me/deepl` after clicking the config button
 
 ### [PDFMathTranslate (pdf2zh)](https://github.com/Byaidu/PDFMathTranslate) (Open-source PDF document translation tool)
 
@@ -237,14 +323,14 @@ Refer to [Advanced Options](https://github.com/Byaidu/PDFMathTranslate?tab=readm
 
 1. [Install Immersive Translate](https://immersivetranslate.com/download/)
 2. Go to developer settings and enable beta testing features
-3. Go to translation services and add a custom translation service DeepLX, configure the API URL to `https://dplx.xi-xu.me/translate`
+3. Go to translation services and add a custom translation service DeepLX, configure the API URL to `https://dplx.xi-xu.me/deepl`
 4. Configure the maximum requests per second and maximum text length per request to appropriate values (e.g., `80` and `5000`) to ensure stability and performance
 
 ### [Bob](https://bobtranslate.com/) (Closed-source macOS app)
 
 1. [Download and install Bob from the Mac App Store](https://apps.apple.com/app/id1630034110)
 2. Download and install the [bob-plugin-deeplx](https://github.com/missuo/bob-plugin-deeplx) plugin
-3. Configure the plugin to use `https://dplx.xi-xu.me/translate`
+3. Configure the plugin to use `https://dplx.xi-xu.me/deepl`
 
 ## 🚀 Self-deployment
 
@@ -329,11 +415,73 @@ For optimal performance and stability, it's recommended to deploy as many [XDPL]
 
 ## 📖 API Reference
 
-### `/translate`
+### Available Endpoints
+
+| Endpoint | Provider | Description | Status |
+|----------|----------|-------------|---------|
+| `/deepl` | DeepL | Primary DeepL translation endpoint | **Recommended** |
+| `/google` | Google Translate | Google Translate endpoint | Active |
+| `/translate` | DeepL | Legacy endpoint (uses DeepL) | Legacy |
+
+### `/deepl` (Recommended)
 
 **Request Method**: `POST`
 
 **Request Headers**: `Content-Type: application/json`
+
+**Request Parameters**:
+
+| Parameter | Type | Description | Required |
+| - | - | - | - |
+| `text`        | string | Text to translate | Yes |
+| `source_lang` | string | Source language code | No, default `AUTO` |
+| `target_lang` | string | Target language code | No, default `EN` |
+
+**Response**:
+
+```json
+{
+  "code": 200,
+  "data": "Translation result",
+  "id": "Random identifier",
+  "source_lang": "Detected source language code",
+  "target_lang": "Target language code"
+}
+```
+
+### `/google`
+
+**Request Method**: `POST`
+
+**Request Headers**: `Content-Type: application/json`
+
+**Request Parameters**:
+
+| Parameter | Type | Description | Required |
+| - | - | - | - |
+| `text`        | string | Text to translate | Yes |
+| `source_lang` | string | Source language code | No, default `AUTO` |
+| `target_lang` | string | Target language code | No, default `EN` |
+
+**Response**:
+
+```json
+{
+  "code": 200,
+  "data": "Translation result",
+  "id": "Random identifier",
+  "source_lang": "Detected source language code",
+  "target_lang": "Target language code"
+}
+```
+
+### `/translate` (Legacy)
+
+**Request Method**: `POST`
+
+**Request Headers**: `Content-Type: application/json`
+
+**Note**: This is a legacy endpoint that uses DeepL. For new integrations, please use `/deepl` instead.
 
 **Request Parameters**:
 

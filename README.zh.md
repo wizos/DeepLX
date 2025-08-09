@@ -134,6 +134,32 @@ graph TB
 
 ### cURL 示例
 
+#### DeepL 翻译（推荐）
+
+```bash
+curl -X POST https://dplx.xi-xu.me/deepl \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Hello, world!",
+    "source_lang": "EN",
+    "target_lang": "ZH"
+  }'
+```
+
+#### Google 翻译
+
+```bash
+curl -X POST https://dplx.xi-xu.me/google \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Hello, world!",
+    "source_lang": "EN",
+    "target_lang": "ZH"
+  }'
+```
+
+#### 传统端点（DeepL）
+
 ```bash
 curl -X POST https://dplx.xi-xu.me/translate \
   -H "Content-Type: application/json" \
@@ -146,9 +172,11 @@ curl -X POST https://dplx.xi-xu.me/translate \
 
 ### JavaScript 示例
 
+#### 使用 DeepL 翻译
+
 ```javascript
-async function translate(text, sourceLang = 'auto', targetLang = 'zh') {
-  const response = await fetch('https://dplx.xi-xu.me/translate', {
+async function translateWithDeepL(text, sourceLang = 'auto', targetLang = 'zh') {
+  const response = await fetch('https://dplx.xi-xu.me/deepl', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -165,19 +193,47 @@ async function translate(text, sourceLang = 'auto', targetLang = 'zh') {
 }
 
 // 使用示例
-translate('Hello, world!', 'en', 'zh')
+translateWithDeepL('Hello, world!', 'en', 'zh')
+  .then(result => console.log(result))
+  .catch(error => console.error(error));
+```
+
+#### 使用 Google 翻译
+
+```javascript
+async function translateWithGoogle(text, sourceLang = 'auto', targetLang = 'zh') {
+  const response = await fetch('https://dplx.xi-xu.me/google', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      text: text,
+      source_lang: sourceLang,
+      target_lang: targetLang
+    })
+  });
+  
+  const result = await response.json();
+  return result.data;
+}
+
+// 使用示例
+translateWithGoogle('Hello, world!', 'en', 'zh')
   .then(result => console.log(result))
   .catch(error => console.error(error));
 ```
 
 ### Python 示例
 
+#### 使用 DeepL 翻译
+
 ```python
 import requests
 import json
 
-def translate(text, source_lang='auto', target_lang='zh'):
-    url = 'https://dplx.xi-xu.me/translate'
+def translate_with_deepl(text, source_lang='auto', target_lang='zh'):
+    url = 'https://dplx.xi-xu.me/deepl'
     data = {
         'text': text,
         'source_lang': source_lang,
@@ -194,7 +250,37 @@ def translate(text, source_lang='auto', target_lang='zh'):
 
 # 使用示例
 try:
-    result = translate('Hello, world!', 'en', 'zh')
+    result = translate_with_deepl('Hello, world!', 'en', 'zh')
+    print(result)
+except Exception as e:
+    print(f"错误: {e}")
+```
+
+#### 使用 Google 翻译
+
+```python
+import requests
+import json
+
+def translate_with_google(text, source_lang='auto', target_lang='zh'):
+    url = 'https://dplx.xi-xu.me/google'
+    data = {
+        'text': text,
+        'source_lang': source_lang,
+        'target_lang': target_lang
+    }
+    
+    response = requests.post(url, json=data)
+    result = response.json()
+    
+    if result['code'] == 200:
+        return result['data']
+    else:
+        raise Exception(f"翻译失败: {result.get('message', '未知错误')}")
+
+# 使用示例
+try:
+    result = translate_with_google('Hello, world!', 'en', 'zh')
     print(result)
 except Exception as e:
     print(f"错误: {e}")
@@ -220,14 +306,14 @@ except Exception as e:
 
 1. [下载并安装适用于您平台的 Pot](https://github.com/pot-app/pot-desktop/releases/latest)
 2. 打开 Pot 设置并导航到服务设置
-3. 将 DeepL 服务类型配置为 DeepLX，并将自定义 URL 配置为 `https://dplx.xi-xu.me/translate`
+3. 将 DeepL 服务类型配置为 DeepLX，并将自定义 URL 配置为 `https://dplx.xi-xu.me/deepl`
 
 ### [Zotero](https://www.zotero.org/)（开源文献管理应用）
 
 1. [下载并安装适用于您平台的 Zotero](https://www.zotero.org/download/)
 2. 下载并安装 [Translate for Zotero](https://github.com/windingwind/zotero-pdf-translate) 插件
 3. 打开 Zotero 设置并导航到翻译中的服务部分
-4. 将翻译服务配置为 DeepLX（API），并点击配置按钮后将接口配置为 `https://dplx.xi-xu.me/translate`
+4. 将翻译服务配置为 DeepLX（API），并点击配置按钮后将接口配置为 `https://dplx.xi-xu.me/deepl`
 
 ### [PDFMathTranslate（pdf2zh）](https://github.com/Byaidu/PDFMathTranslate)（开源 PDF 文档翻译工具）
 
@@ -237,14 +323,14 @@ except Exception as e:
 
 1. [安装沉浸式翻译](https://immersivetranslate.com/zh-Hans/download/)
 2. 进入开发者设置并开启 beta 测试特性
-3. 进入翻译服务添加自定义翻译服务 DeepLX，将 API URL 配置为 `https://dplx.xi-xu.me/translate`
+3. 进入翻译服务添加自定义翻译服务 DeepLX，将 API URL 配置为 `https://dplx.xi-xu.me/deepl`
 4. 将每秒最大请求数和每次请求最大文本长度配置为合适的值（例如 `80` 和 `5000`），以确保稳定性和性能
 
 ### [Bob](https://bobtranslate.com/)（闭源 macOS 应用）
 
 1. [从 Mac App Store 下载并安装 Bob](https://apps.apple.com/cn/app/id1630034110)
 2. 下载并安装 [bob-plugin-deeplx](https://github.com/missuo/bob-plugin-deeplx) 插件
-3. 配置插件使用 `https://dplx.xi-xu.me/translate`
+3. 配置插件使用 `https://dplx.xi-xu.me/deepl`
 
 ## 🚀 自部署
 
@@ -329,11 +415,73 @@ npx wrangler deploy
 
 ## 📖 API 参考
 
-### `/translate`
+### 可用端点
+
+| 端点 | 服务提供商 | 描述 | 状态 |
+|----------|----------|-------------|---------|
+| `/deepl` | DeepL | 主要 DeepL 翻译端点 | **推荐** |
+| `/google` | Google 翻译 | Google 翻译端点 | 活跃 |
+| `/translate` | DeepL | 传统端点（使用 DeepL） | 传统 |
+
+### `/deepl`（推荐）
 
 **请求方法**：`POST`
 
 **请求标头**：`Content-Type: application/json`
+
+**请求参数**：
+
+| 参数 | 类型 | 说明 | 是否必要 |
+| - | - | - | - |
+| `text`        | string | 要翻译的文本 | 是 |
+| `source_lang` | string | 源语言代码 | 否，默认值 `AUTO` |
+| `target_lang` | string | 目标语言代码 | 否，默认值 `EN` |
+
+**响应**：
+
+```json
+{
+  "code": 200,
+  "data": "翻译结果",
+  "id": "随机标识符",
+  "source_lang": "检测到的源语言代码",
+  "target_lang": "目标语言代码"
+}
+```
+
+### `/google`
+
+**请求方法**：`POST`
+
+**请求标头**：`Content-Type: application/json`
+
+**请求参数**：
+
+| 参数 | 类型 | 说明 | 是否必要 |
+| - | - | - | - |
+| `text`        | string | 要翻译的文本 | 是 |
+| `source_lang` | string | 源语言代码 | 否，默认值 `AUTO` |
+| `target_lang` | string | 目标语言代码 | 否，默认值 `EN` |
+
+**响应**：
+
+```json
+{
+  "code": 200,
+  "data": "翻译结果",
+  "id": "随机标识符",
+  "source_lang": "检测到的源语言代码",
+  "target_lang": "目标语言代码"
+}
+```
+
+### `/translate`（传统）
+
+**请求方法**：`POST`
+
+**请求标头**：`Content-Type: application/json`
+
+**注意**：这是一个使用 DeepL 的传统端点。对于新集成，请使用 `/deepl`。
 
 **请求参数**：
 
