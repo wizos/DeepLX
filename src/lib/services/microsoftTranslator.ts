@@ -1,108 +1,166 @@
-/**
- * Microsoft Translator integration service
- * Provides Microsoft Translator functionality with DeepLX-compatible API format
- * Uses the unofficial edge.microsoft.com endpoint
- */
-
-import { createErrorResponse } from "../errorHandler";
-import {
-  Config,
-  createStandardResponse,
-  RequestParams,
-  ResponseParams,
-} from "../types";
+import type { ResponseParams } from "../types";
+import { createStandardResponse } from "../types";
 
 /**
- * Translate text using Microsoft Translator edge API
- * @param params - Translation parameters (text, source_lang, target_lang)
- * @param config - Configuration options
- * @returns Translation response in DeepLX format
+ * Get authentication token from Microsoft Edge Translator
  */
-export async function translateWithMicrosoft(
-  params: RequestParams,
-  config?: Config & { env?: any; clientIP?: string }
-): Promise<ResponseParams> {
+async function getToken(): Promise<string> {
+  const tokenUrl = "https://edge.microsoft.com/translate/auth";
+
   try {
-    const { text, source_lang, target_lang } = params;
+    const response = await fetch(tokenUrl, {
+      method: "GET",
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 Edg/113.0.1774.42",
+        Referer: "https://www.bing.com/",
+        Accept: "*/*",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "cross-site",
+      },
+    });
 
-    // Construct the request to Microsoft Translator edge API
-    const microsoftApiUrl = new URL(
-      "https://api.cognitive.microsofttranslator.com/translate"
-    );
-    microsoftApiUrl.searchParams.append("api-version", "3.0");
-    microsoftApiUrl.searchParams.append("to", target_lang.toLowerCase());
-
-    if (source_lang !== "auto") {
-      microsoftApiUrl.searchParams.append("from", source_lang.toLowerCase());
+    if (!response.ok) {
+      throw new Error(
+        `Failed to get token: ${response.status} ${response.statusText}`
+      );
     }
 
-    // Prepare request body in Microsoft Translator format
+    const token = await response.text();
+    if (!token) {
+      throw new Error("Empty token received");
+    }
+
+    return token;
+  } catch (error) {
+    throw new Error(
+      `Token acquisition failed: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+}
+
+/**
+ * Translate text using Microsoft Translator (Edge API)
+ */
+export async function translateWithMicrosoft(
+  text: string,
+  sourceLanguage: string,
+  targetLanguage: string,
+  options?: any
+): Promise<ResponseParams> {
+  try {
+    // Get authentication token
+    const token = await getToken();
+
+    // Use original language codes directly
+    const fromLang = sourceLanguage === "auto" ? "" : sourceLanguage;
+    const toLang = targetLanguage;
+
+    // Microsoft Translator API endpoint
+    const translateUrl =
+      "https://api-edge.cognitive.microsofttranslator.com/translate";
+
+    // Prepare request body
     const requestBody = [{ Text: text }];
 
-    // Make the fetch call to Microsoft Translator
-    const microsoftResponse = await fetch(microsoftApiUrl.toString(), {
+    // Build query parameters
+    const queryParams = new URLSearchParams({
+      "api-version": "3.0",
+      to: toLang,
+      includeSentenceLength: "true",
+    });
+
+    // Add from parameter only if not auto-detect
+    if (fromLang && fromLang !== "") {
+      queryParams.append("from", fromLang);
+    }
+
+    const response = await fetch(`${translateUrl}?${queryParams}`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        Accept: "application/json",
-        "Accept-Language": "en-US,en;q=0.9",
+        Accept: "*/*",
+        "Accept-Language":
+          "zh-TW,zh;q=0.9,ja;q=0.8,zh-CN;q=0.7,en-US;q=0.6,en;q=0.5",
+        Authorization: `Bearer ${token}`,
         "Cache-Control": "no-cache",
-        // Note: This is using the unofficial API without authentication
-        // In production, you would need proper authentication headers
+        "Content-Type": "application/json",
+        Pragma: "no-cache",
+        "Sec-Ch-Ua":
+          '"Microsoft Edge";v="113", "Chromium";v="113", "Not-A.Brand";v="24"',
+        "Sec-Ch-Ua-Mobile": "?0",
+        "Sec-Ch-Ua-Platform": '"Windows"',
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "cross-site",
+        Referer: "https://appsumo.com/",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 Edg/113.0.1774.42",
       },
       body: JSON.stringify(requestBody),
     });
 
-    if (!microsoftResponse.ok) {
-      throw new Error(
-        `Microsoft Translator API responded with status ${microsoftResponse.status}`
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error(
+        `Microsoft Translator API error: ${response.status} ${response.statusText} - ${errorData}`
       );
+      return createStandardResponse(500, null);
     }
 
-    const microsoftResponseBody = await microsoftResponse.json();
+    const result = await response.json();
 
-    // Parse Microsoft Translator response
+    // Validate response structure
+    if (!result || !Array.isArray(result) || result.length === 0) {
+      console.error("Invalid response format from Microsoft Translator");
+      return createStandardResponse(500, null);
+    }
+
+    const translation = result[0];
     if (
-      !microsoftResponseBody ||
-      !Array.isArray(microsoftResponseBody) ||
-      microsoftResponseBody.length === 0
+      !translation.translations ||
+      !Array.isArray(translation.translations) ||
+      translation.translations.length === 0
     ) {
-      throw new Error("Invalid response format from Microsoft Translator");
-    }
-
-    const translation = microsoftResponseBody[0];
-    if (!translation.translations || translation.translations.length === 0) {
-      throw new Error(
-        "No translation result received from Microsoft Translator"
-      );
+      console.error("No translations found in Microsoft Translator response");
+      return createStandardResponse(500, null);
     }
 
     const translatedText = translation.translations[0].text;
-    const detectedSourceLang =
-      translation.detectedLanguage?.language || source_lang;
-
     if (!translatedText) {
-      throw new Error("Empty translation result from Microsoft Translator");
+      console.error("Empty translation result from Microsoft Translator");
+      return createStandardResponse(500, null);
     }
 
-    // Format the response to match the DeepLX API
+    // Determine detected source language
+    const detectedLanguage =
+      translation.detectedLanguage?.language || sourceLanguage;
+
     return createStandardResponse(
       200,
-      translatedText,
+      translatedText.trim(),
       Math.floor(Math.random() * 10000000000),
-      detectedSourceLang.toUpperCase(),
-      target_lang.toUpperCase()
+      detectedLanguage,
+      targetLanguage
     );
   } catch (error) {
-    console.error("Error in Microsoft Translator:", error);
+    console.error("Microsoft Translator error:", error);
+    return createStandardResponse(500, null);
+  }
+}
 
-    const errorResponse = createErrorResponse(error, {
-      endpoint: "/microsoft",
-      clientIP: config?.clientIP || "unknown",
-    });
-
-    return errorResponse.response;
+/**
+ * Check if Microsoft Translator service is available
+ */
+export async function checkMicrosoftAvailability(): Promise<boolean> {
+  try {
+    const token = await getToken();
+    return Boolean(token);
+  } catch {
+    return false;
   }
 }
