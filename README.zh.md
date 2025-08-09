@@ -82,60 +82,89 @@ graph TB
             Debug[POST /debug]
         end
         
-        subgraph "核心组件"
+        subgraph "核心中间件与组件"
+            CORS[CORS 处理器]
             Security[安全中间件]
             RateLimit[限流系统]
-            Cache[双层缓存]
-            Query[翻译引擎]
-            Proxy[代理管理]
+            Cache[双层缓存<br/>内存 + KV]
+        end
+        
+        subgraph "翻译服务"
+            QueryEngine[DeepL 查询引擎]
+            GoogleService[Google 翻译服务]
+        end
+        
+        subgraph "支持系统"
+            ProxyManager[代理管理器<br/>& 负载均衡]
+            CircuitBreaker[熔断器]
+            RetryLogic[重试逻辑]
+            ErrorHandler[错误处理器]
         end
     end
 
     %% 存储层
     subgraph "Cloudflare 存储"
-        CacheKV[(缓存 KV)]
-        RateLimitKV[(限流 KV)]
-        Analytics[(分析引擎)]
+        CacheKV[(缓存 KV<br/>翻译结果)]
+        RateLimitKV[(限流 KV<br/>令牌桶)]
+        Analytics[(分析引擎<br/>指标 & 监控)]
     end
 
     %% 外部服务
-    subgraph "翻译服务"
-        XDPL[XDPL 代理集群<br/>Vercel 部署]
+    subgraph "外部翻译 API"
+        DeepLAPI[DeepL JSONRPC API<br/>www2.deepl.com]
+        GoogleAPI[Google 翻译 API<br/>translate.google.com]
+        XDPL[XDPL 代理集群<br/>多个 Vercel 实例]
     end
 
-    %% 连接关系
+    %% 请求流连接
     Client --> Router
-    Router --> DeepL
-    Router --> Google
-    Router --> Translate
-    Router --> Debug
+    Router --> CORS
+    CORS --> DeepL
+    CORS --> Google
+    CORS --> Translate
+    CORS --> Debug
     
     DeepL --> Security
     Google --> Security
     Translate --> Security
+    Debug --> Security
+    
     Security --> RateLimit
     RateLimit --> Cache
-    Cache --> Query
-    Query --> Proxy
     
+    Cache --> QueryEngine
+    Cache --> GoogleService
+    
+    QueryEngine --> ProxyManager
+    GoogleService --> GoogleAPI
+    
+    ProxyManager --> CircuitBreaker
+    CircuitBreaker --> RetryLogic
+    RetryLogic --> ErrorHandler
+    
+    %% 外部 API 连接
+    ProxyManager -.-> XDPL
+    XDPL -.-> DeepLAPI
+    
+    %% 存储连接
     Cache -.-> CacheKV
     RateLimit -.-> RateLimitKV
-    Query -.-> Analytics
-    
-    Proxy --> XDPL
+    Router -.-> Analytics
 
     %% 样式
-    classDef clientClass fill:#e3f2fd,stroke:#1976d2
-    classDef workerClass fill:#f3e5f5,stroke:#7b1fa2
-    classDef coreClass fill:#e8f5e8,stroke:#388e3c
-    classDef storageClass fill:#fff3e0,stroke:#f57c00
-    classDef externalClass fill:#ffebee,stroke:#d32f2f
+    classDef clientClass fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef workerClass fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef middlewareClass fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef serviceClass fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef storageClass fill:#fce4ec,stroke:#e91e63,stroke-width:2px
+    classDef externalClass fill:#ffebee,stroke:#d32f2f,stroke-width:2px
 
     class Client clientClass
     class Router,DeepL,Google,Translate,Debug workerClass
-    class Security,RateLimit,Cache,Query,Proxy coreClass
+    class CORS,Security,RateLimit,Cache middlewareClass
+    class QueryEngine,GoogleService,ProxyManager,CircuitBreaker,RetryLogic,ErrorHandler serviceClass
     class CacheKV,RateLimitKV,Analytics storageClass
-    class XDPL externalClass
+    class DeepLAPI,GoogleAPI,XDPL externalClass
 ```
 
 ## 🌐 在线服务
@@ -184,7 +213,7 @@ curl -X POST https://dplx.xi-xu.me/translate \
 
 ### JavaScript 示例
 
-#### 使用 DeepL 翻译
+#### DeepL 翻译（JavaScript）
 
 ```javascript
 async function translateWithDeepL(text, sourceLang = 'auto', targetLang = 'zh') {
@@ -210,7 +239,7 @@ translateWithDeepL('Hello, world!', 'en', 'zh')
   .catch(error => console.error(error));
 ```
 
-#### 使用 Google 翻译
+#### Google 翻译（JavaScript）
 
 ```javascript
 async function translateWithGoogle(text, sourceLang = 'auto', targetLang = 'zh') {
@@ -238,7 +267,7 @@ translateWithGoogle('Hello, world!', 'en', 'zh')
 
 ### Python 示例
 
-#### 使用 DeepL 翻译
+#### DeepL 翻译（Python）
 
 ```python
 import requests
@@ -268,7 +297,7 @@ except Exception as e:
     print(f"错误: {e}")
 ```
 
-#### 使用 Google 翻译
+#### Google 翻译（Python）
 
 ```python
 import requests

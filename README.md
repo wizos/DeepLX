@@ -82,60 +82,89 @@ graph TB
             Debug[POST /debug]
         end
         
-        subgraph "Core Components"
+        subgraph "Core Middleware & Components"
+            CORS[CORS Handler]
             Security[Security Middleware]
             RateLimit[Rate Limiting System]
-            Cache[Dual-layer Cache]
-            Query[Translation Engine]
-            Proxy[Proxy Management]
+            Cache[Dual-layer Cache<br/>Memory + KV]
+        end
+        
+        subgraph "Translation Services"
+            QueryEngine[DeepL Query Engine]
+            GoogleService[Google Translate Service]
+        end
+        
+        subgraph "Support Systems"
+            ProxyManager[Proxy Manager<br/>& Load Balancer]
+            CircuitBreaker[Circuit Breaker]
+            RetryLogic[Retry Logic]
+            ErrorHandler[Error Handler]
         end
     end
 
     %% Storage Layer
     subgraph "Cloudflare Storage"
-        CacheKV[(Cache KV)]
-        RateLimitKV[(Rate Limit KV)]
-        Analytics[(Analytics Engine)]
+        CacheKV[(Cache KV<br/>Translation Results)]
+        RateLimitKV[(Rate Limit KV<br/>Token Buckets)]
+        Analytics[(Analytics Engine<br/>Metrics & Monitoring)]
     end
 
     %% External Services
-    subgraph "Translation Service"
-        XDPL[XDPL Proxy Cluster<br/>Vercel Deployment]
+    subgraph "External Translation APIs"
+        DeepLAPI[DeepL JSONRPC API<br/>www2.deepl.com]
+        GoogleAPI[Google Translate API<br/>translate.google.com]
+        XDPL[XDPL Proxy Cluster<br/>Multiple Vercel Instances]
     end
 
-    %% Connections
+    %% Request Flow Connections
     APIClient --> Router
-    Router --> DeepL
-    Router --> Google
-    Router --> Translate
-    Router --> Debug
+    Router --> CORS
+    CORS --> DeepL
+    CORS --> Google
+    CORS --> Translate
+    CORS --> Debug
     
     DeepL --> Security
     Google --> Security
     Translate --> Security
+    Debug --> Security
+    
     Security --> RateLimit
     RateLimit --> Cache
-    Cache --> Query
-    Query --> Proxy
     
+    Cache --> QueryEngine
+    Cache --> GoogleService
+    
+    QueryEngine --> ProxyManager
+    GoogleService --> GoogleAPI
+    
+    ProxyManager --> CircuitBreaker
+    CircuitBreaker --> RetryLogic
+    RetryLogic --> ErrorHandler
+    
+    %% External API Connections
+    ProxyManager -.-> XDPL
+    XDPL -.-> DeepLAPI
+    
+    %% Storage Connections
     Cache -.-> CacheKV
     RateLimit -.-> RateLimitKV
-    Query -.-> Analytics
-    
-    Proxy --> XDPL
+    Router -.-> Analytics
 
     %% Styles
-    classDef clientClass fill:#e3f2fd,stroke:#1976d2
-    classDef workerClass fill:#f3e5f5,stroke:#7b1fa2
-    classDef coreClass fill:#e8f5e8,stroke:#388e3c
-    classDef storageClass fill:#fff3e0,stroke:#f57c00
-    classDef externalClass fill:#ffebee,stroke:#d32f2f
+    classDef clientClass fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef workerClass fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef middlewareClass fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef serviceClass fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef storageClass fill:#fce4ec,stroke:#e91e63,stroke-width:2px
+    classDef externalClass fill:#ffebee,stroke:#d32f2f,stroke-width:2px
 
     class APIClient clientClass
     class Router,DeepL,Google,Translate,Debug workerClass
-    class Security,RateLimit,Cache,Query,Proxy coreClass
+    class CORS,Security,RateLimit,Cache middlewareClass
+    class QueryEngine,GoogleService,ProxyManager,CircuitBreaker,RetryLogic,ErrorHandler serviceClass
     class CacheKV,RateLimitKV,Analytics storageClass
-    class XDPL externalClass
+    class DeepLAPI,GoogleAPI,XDPL externalClass
 ```
 
 ## 🌐 Online Service
@@ -184,7 +213,7 @@ curl -X POST https://dplx.xi-xu.me/translate \
 
 ### JavaScript Examples
 
-#### Using DeepL Translation
+#### DeepL Translation (JavaScript)
 
 ```javascript
 async function translateWithDeepL(text, sourceLang = 'auto', targetLang = 'zh') {
@@ -210,7 +239,7 @@ translateWithDeepL('Hello, world!', 'en', 'zh')
   .catch(error => console.error(error));
 ```
 
-#### Using Google Translate
+#### Google Translate (JavaScript)
 
 ```javascript
 async function translateWithGoogle(text, sourceLang = 'auto', targetLang = 'zh') {
@@ -238,7 +267,7 @@ translateWithGoogle('Hello, world!', 'en', 'zh')
 
 ### Python Examples
 
-#### Using DeepL Translation
+#### DeepL Translation (Python)
 
 ```python
 import requests
@@ -268,7 +297,7 @@ except Exception as e:
     print(f"Error: {e}")
 ```
 
-#### Using Google Translate
+#### Google Translate (Python)
 
 ```python
 import requests
