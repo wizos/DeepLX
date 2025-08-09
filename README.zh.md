@@ -3,16 +3,22 @@
 ***[English](README.md)***
 
 [![许可证](https://img.shields.io/github/license/xixu-me/deeplx)](#-许可证)
-[![部署状态](https://img.shields.io/website?url=https://dplx.xi-xu.me/translate&label=在线服务)](#-在线服务)
+[![部署状态](https://img.shields.io/website?url=https://dplx.xi-xu.me/deepl&label=在线服务)](#-在线服务)
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange?logo=cloudflare)](#-自部署)
 
-目前 [DeepLX](https://github.com/OwO-Network/DeepLX) 的最佳无服务器实现，专为 Cloudflare Workers 优化设计。通过智能代理端点轮换、高级限流算法和熔断器机制，几乎完全避免了 HTTP 429 错误，提供比 DeepL API 更高的请求速率限制和更低的网络往返时间。
+目前 [DeepLX](https://github.com/OwO-Network/DeepLX) 的最佳无服务器实现，专为 Cloudflare Workers 优化设计。通过智能代理端点轮换、高级限流算法和熔断器机制，几乎完全避免了 HTTP 429 错误，提供比传统翻译 API 更高的请求速率限制和更低的网络往返时间。**现已支持 DeepL 和 Google 翻译服务。**
 
-## 🆓 **相较于 DeepL API 完全免费**
+## 🆓 **相较于翻译 API 完全免费**
 
-**与付费的 DeepL API 不同，DeepLX 完全免费使用** - 无需 API 密钥、无订阅费用、无使用限制。只需部署一次，即可享受无限制的翻译请求，无需担心任何费用问题。
+**与付费的翻译 API 不同，DeepLX 完全免费使用** - 无需 API 密钥、无订阅费用、无使用限制。只需部署一次，即可享受无限制的翻译请求，无需担心任何费用问题。
 
 ## ✨ 特性与性能优势
+
+### 🌐 多服务提供商支持
+
+- **DeepL 翻译** (`/deepl`) - 高质量的 AI 翻译
+- **Google 翻译** (`/google`) - 广泛的语言支持和快速处理
+- **传统兼容性** (`/translate`) - 使用 DeepL 的向后兼容端点
 
 ### 🚀 性能优势
 
@@ -70,6 +76,8 @@ graph TB
         Router[Hono 路由器]
         
         subgraph "API 端点"
+            DeepL[POST /deepl]
+            Google[POST /google]
             Translate[POST /translate]
             Debug[POST /debug]
         end
@@ -97,9 +105,13 @@ graph TB
 
     %% 连接关系
     Client --> Router
+    Router --> DeepL
+    Router --> Google
     Router --> Translate
     Router --> Debug
     
+    DeepL --> Security
+    Google --> Security
     Translate --> Security
     Security --> RateLimit
     RateLimit --> Cache
@@ -120,7 +132,7 @@ graph TB
     classDef externalClass fill:#ffebee,stroke:#d32f2f
 
     class Client clientClass
-    class Router,Translate,Debug workerClass
+    class Router,DeepL,Google,Translate,Debug workerClass
     class Security,RateLimit,Cache,Query,Proxy coreClass
     class CacheKV,RateLimitKV,Analytics storageClass
     class XDPL externalClass

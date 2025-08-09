@@ -3,16 +3,22 @@
 ***[汉语](README.zh.md)***
 
 [![License](https://img.shields.io/github/license/xixu-me/deeplx)](#-license)
-[![Deployment Status](https://img.shields.io/website?url=https://dplx.xi-xu.me/translate&label=Online%20Service)](#-online-service)
+[![Deployment Status](https://img.shields.io/website?url=https://dplx.xi-xu.me/deepl&label=Online%20Service)](#-online-service)
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange?logo=cloudflare)](#-self-deployment)
 
-Currently, the best serverless implementation of [DeepLX](https://github.com/OwO-Network/DeepLX), optimized for Cloudflare Workers. Through intelligent proxy endpoint rotation, advanced rate limiting algorithms, and circuit breaker mechanisms, it almost completely avoids HTTP 429 errors, providing higher request rate limits and lower network round-trip times than the DeepL API.
+Currently, the best serverless implementation of [DeepLX](https://github.com/OwO-Network/DeepLX), optimized for Cloudflare Workers. Through intelligent proxy endpoint rotation, advanced rate limiting algorithms, and circuit breaker mechanisms, it almost completely avoids HTTP 429 errors, providing higher request rate limits and lower network round-trip times than traditional translation APIs. **Now supports both DeepL and Google Translate services.**
 
-## 🆓 **Completely FREE Alternative to DeepL API**
+## 🆓 **Completely FREE Alternative to Translation APIs**
 
-**Unlike the paid DeepL API, DeepLX is completely free to use** - no API keys, no subscription fees, no usage limits. Simply deploy once and enjoy unlimited translation requests without any cost concerns.
+**Unlike paid translation APIs, DeepLX is completely free to use** - no API keys, no subscription fees, no usage limits. Simply deploy once and enjoy unlimited translation requests without any cost concerns.
 
 ## ✨ Features & Performance Advantages
+
+### 🌐 Multi-Provider Support
+
+- **DeepL Translation** (`/deepl`) - High-quality translation with advanced AI
+- **Google Translate** (`/google`) - Wide language support and fast processing  
+- **Legacy Compatibility** (`/translate`) - Backward compatible endpoint using DeepL
 
 ### 🚀 Performance Advantages
 
@@ -70,6 +76,8 @@ graph TB
         Router[Hono Router]
         
         subgraph "API Endpoints"
+            DeepL[POST /deepl]
+            Google[POST /google]
             Translate[POST /translate]
             Debug[POST /debug]
         end
@@ -97,9 +105,13 @@ graph TB
 
     %% Connections
     APIClient --> Router
+    Router --> DeepL
+    Router --> Google
     Router --> Translate
     Router --> Debug
     
+    DeepL --> Security
+    Google --> Security
     Translate --> Security
     Security --> RateLimit
     RateLimit --> Cache
@@ -120,7 +132,7 @@ graph TB
     classDef externalClass fill:#ffebee,stroke:#d32f2f
 
     class APIClient clientClass
-    class Router,Translate,Debug workerClass
+    class Router,DeepL,Google,Translate,Debug workerClass
     class Security,RateLimit,Cache,Query,Proxy coreClass
     class CacheKV,RateLimitKV,Analytics storageClass
     class XDPL externalClass
