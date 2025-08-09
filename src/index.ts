@@ -20,6 +20,7 @@ import {
   validateLanguageCode,
 } from "./lib/security";
 import { translateWithGoogle } from "./lib/services/googleTranslate";
+import { translateWithMicrosoft } from "./lib/services/microsoftTranslator";
 import { createStandardResponse } from "./lib/types";
 
 /**
@@ -66,12 +67,15 @@ export default worker;
 
 /**
  * Common translation handler function
- * Processes translation requests for both DeepL and Google Translate
+ * Processes translation requests for DeepL, Google Translate, and Microsoft Translator
  * @param c - Hono context
- * @param provider - Translation provider ('deepl' or 'google')
+ * @param provider - Translation provider ('deepl', 'google', or 'microsoft')
  * @returns Translation response
  */
-async function handleTranslation(c: any, provider: "deepl" | "google") {
+async function handleTranslation(
+  c: any,
+  provider: "deepl" | "google" | "microsoft"
+) {
   const env = c.env;
   const clientIP = getSecureClientIP(c.req.raw) || "unknown";
 
@@ -159,6 +163,11 @@ async function handleTranslation(c: any, provider: "deepl" | "google") {
         env,
         clientIP,
       });
+    } else if (provider === "microsoft") {
+      result = await translateWithMicrosoft(validatedParams, {
+        env,
+        clientIP,
+      });
     } else {
       // Use DeepL as default
       result = await query(validatedParams, {
@@ -206,6 +215,7 @@ app
   .get("/translate", (c) => c.text("Please use POST method :)"))
   .get("/deepl", (c) => c.text("Please use POST method :)"))
   .get("/google", (c) => c.text("Please use POST method :)"))
+  .get("/microsoft", (c) => c.text("Please use POST method :)"))
 
   /**
    * Debug endpoint for request format validation and troubleshooting
@@ -329,6 +339,14 @@ app
    */
   .post("/google", async (c) => {
     return handleTranslation(c, "google");
+  })
+
+  /**
+   * Microsoft Translator endpoint
+   * POST /microsoft - Uses Microsoft Translator service
+   */
+  .post("/microsoft", async (c) => {
+    return handleTranslation(c, "microsoft");
   })
 
   /**
