@@ -164,10 +164,15 @@ async function handleTranslation(
         clientIP,
       });
     } else if (provider === "microsoft") {
-      result = await translateWithMicrosoft(validatedParams, {
-        env,
-        clientIP,
-      });
+      result = await translateWithMicrosoft(
+        validatedParams.text,
+        validatedParams.source_lang,
+        validatedParams.target_lang,
+        {
+          env,
+          clientIP,
+        }
+      );
     } else {
       // Use DeepL as default
       result = await query(validatedParams, {

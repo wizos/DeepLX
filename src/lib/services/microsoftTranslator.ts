@@ -64,9 +64,6 @@ export async function translateWithMicrosoft(
     const translateUrl =
       "https://api-edge.cognitive.microsofttranslator.com/translate";
 
-    // Prepare request body
-    const requestBody = [{ Text: text }];
-
     // Build query parameters
     const queryParams = new URLSearchParams({
       "api-version": "3.0",
@@ -101,7 +98,7 @@ export async function translateWithMicrosoft(
         "User-Agent":
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 Edg/113.0.1774.42",
       },
-      body: JSON.stringify(requestBody),
+      body: JSON.stringify([{ Text: text }]),
     });
 
     if (!response.ok) {
