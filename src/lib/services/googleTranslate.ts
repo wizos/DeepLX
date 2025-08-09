@@ -19,7 +19,7 @@ import {
  */
 export async function translateWithGoogle(
   params: RequestParams,
-  config: Config & { env: any; clientIP: string }
+  config?: Config & { env?: any; clientIP?: string }
 ): Promise<ResponseParams> {
   try {
     const { text, source_lang, target_lang } = params;
@@ -88,7 +88,7 @@ export async function translateWithGoogle(
 
     const errorResponse = createErrorResponse(error, {
       endpoint: "/google",
-      clientIP: config.clientIP,
+      clientIP: config?.clientIP || "unknown",
     });
 
     return errorResponse.response;
