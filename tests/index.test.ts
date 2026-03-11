@@ -68,8 +68,32 @@ describe("Main App", () => {
   });
 
   describe("POST /debug", () => {
+    it("should return 404 when debug mode is unset", async () => {
+      delete mockEnv.DEBUG_MODE;
+
+      const request = new Request("http://localhost/debug", {
+        method: "POST",
+        body: JSON.stringify({ text: "Hello world" }),
+      });
+      const response = await app.fetch(request, mockEnv);
+
+      expect(response.status).toBe(404);
+    });
+
     it("should return 404 when debug mode is disabled", async () => {
       mockEnv.DEBUG_MODE = "false";
+
+      const request = new Request("http://localhost/debug", {
+        method: "POST",
+        body: JSON.stringify({ text: "Hello world" }),
+      });
+      const response = await app.fetch(request, mockEnv);
+
+      expect(response.status).toBe(404);
+    });
+
+    it("should return 404 when debug mode is a non-empty falsey-like string", async () => {
+      mockEnv.DEBUG_MODE = "disabled";
 
       const request = new Request("http://localhost/debug", {
         method: "POST",

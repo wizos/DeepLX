@@ -27,6 +27,14 @@ import { createStandardResponse } from "./lib/types";
  */
 const app = new Hono<{ Bindings: Env }>();
 
+function isDebugModeEnabled(value?: string): boolean {
+  if (!value) {
+    return false;
+  }
+
+  return ["true", "1", "yes", "on"].includes(value.trim().toLowerCase());
+}
+
 /**
  * Scheduled event handler for periodic maintenance tasks
  * Executes every 5 minutes as configured in wrangler.jsonc
@@ -214,7 +222,7 @@ app
    */
   .post("/debug", async (c) => {
     // Check if debug mode is enabled via environment variable
-    if (!c.env.DEBUG_MODE) {
+    if (!isDebugModeEnabled(c.env.DEBUG_MODE)) {
       return c.json(createStandardResponse(404, null), 404);
     }
 
