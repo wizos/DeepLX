@@ -33,8 +33,8 @@ export interface RateLimitResult {
  * @param env Environment bindings containing proxy configuration
  * @returns Object containing calculated rate limits
  */
-async function getDynamicRateLimits(env: Env) {
-  const proxyEndpoints = await getProxyEndpoints(env);
+function getDynamicRateLimits(env: Env) {
+  const proxyEndpoints = getProxyEndpoints(env);
   return calculateDynamicRateLimits(proxyEndpoints.length);
 }
 
@@ -81,7 +81,7 @@ async function checkRateLimit(clientIP: string, env: Env): Promise<boolean> {
   const now = Date.now();
 
   try {
-    const rateLimits = await getDynamicRateLimits(env);
+    const rateLimits = getDynamicRateLimits(env);
     const maxTokens = rateLimits.TOKENS_PER_MINUTE;
 
     // Check in-memory cache
@@ -167,8 +167,19 @@ async function checkRateLimit(clientIP: string, env: Env): Promise<boolean> {
  * @returns Promise that resolves after the specified delay
  */
 export async function delayRequest(seconds: number): Promise<void> {
-  const delayMs = Math.max(0, Math.round(seconds * 1000));
-  await new Promise((resolve) => setTimeout(resolve, delayMs));
+  return new Promise((resolve) => {
+    // Use a simple delay implementation for Workers environment
+    const start = Date.now();
+    const checkTime = () => {
+      if (Date.now() - start >= seconds * 1000) {
+        resolve();
+      } else {
+        // Use minimal delay to prevent blocking
+        Promise.resolve().then(checkTime);
+      }
+    };
+    checkTime();
+  });
 }
 
 /**
