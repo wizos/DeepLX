@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Auto-merge safe Dependabot PRs
+      - name: Auto-merge Dependabot dependency PRs
         uses: actions/github-script@v7
         with:
           script: |
@@ -30,42 +30,21 @@ jobs:
               return;
             }
 
-            const parseVersion = (raw) => {
-              const cleaned = raw.trim().replace(/^v/i, '');
-              if (!/^\d+(\.\d+){0,3}$/.test(cleaned)) {
-                return null;
-              }
+            const { data: repo } = await github.rest.repos.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
 
-              const parts = cleaned.split('.').map((value) => Number.parseInt(value, 10));
-              while (parts.length < 3) {
-                parts.push(0);
-              }
-              return parts.slice(0, 3);
-            };
+            const mergeMethod =
+              repo.allow_merge_commit ? 'merge' :
+              repo.allow_squash_merge ? 'squash' :
+              repo.allow_rebase_merge ? 'rebase' :
+              null;
 
-            const getUpdateType = (title) => {
-              const match = title.match(/\sfrom\s+([^\s]+)\s+to\s+([^\s]+)/i);
-              if (!match) {
-                return null;
-              }
-
-              const from = parseVersion(match[1]);
-              const to = parseVersion(match[2]);
-              if (!from || !to) {
-                return null;
-              }
-
-              if (to[0] !== from[0]) {
-                return 'major';
-              }
-              if (to[1] !== from[1]) {
-                return 'minor';
-              }
-              if (to[2] !== from[2]) {
-                return 'patch';
-              }
-              return 'none';
-            };
+            if (!mergeMethod) {
+              core.setFailed('This repository does not allow merge, squash, or rebase merges.');
+              return;
+            }
 
             for (const prRef of pullRequests) {
               const { data: pr } = await github.rest.pulls.get({
@@ -74,7 +53,8 @@ jobs:
                 pull_number: prRef.number,
               });
 
-              if (pr.user?.login !== 'dependabot[bot]') {
+              const author = pr.user?.login || '';
+              if (!author.includes('dependabot')) {
                 core.info(`#${pr.number} skipped: author is ${pr.user?.login}.`);
                 continue;
               }
@@ -85,14 +65,13 @@ jobs:
               }
 
               const labels = pr.labels.map((label) => label.name);
-              if (labels.includes('automerge:disabled')) {
-                core.info(`#${pr.number} skipped: automerge disabled by label.`);
+              if (!labels.includes('dependencies')) {
+                core.info(`#${pr.number} skipped: missing dependencies label.`);
                 continue;
               }
 
-              const updateType = getUpdateType(pr.title);
-              if (!updateType || !['minor', 'patch'].includes(updateType)) {
-                core.info(`#${pr.number} skipped: unsupported update type (${updateType ?? 'unknown'}).`);
+              if (labels.includes('automerge:disabled')) {
+                core.info(`#${pr.number} skipped: automerge disabled by label.`);
                 continue;
               }
 
@@ -107,9 +86,9 @@ jobs:
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   pull_number: pr.number,
-                  merge_method: 'squash',
+                  merge_method: mergeMethod,
                 });
-                core.info(`#${pr.number} merged successfully.`);
+                core.info(`#${pr.number} merged successfully with '${mergeMethod}'.`);
               } catch (error) {
                 core.warning(`#${pr.number} was not merged automatically: ${error.message}`);
               }
