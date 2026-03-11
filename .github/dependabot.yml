@@ -15,11 +15,11 @@ updates:
     rebase-strategy: "auto"
     groups:
       production-dependencies:
-        dependency-type: "direct:production"
+        dependency-type: "production"
         patterns:
           - "*"
       development-dependencies:
-        dependency-type: "direct:development"
+        dependency-type: "development"
         patterns:
           - "*"
 
