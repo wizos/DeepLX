@@ -17,6 +17,9 @@ interface Env {
 
   /** Comma-separated list of proxy weights (optional) */
   PROXY_WEIGHTS?: string;
+
+  /** Enables the /debug endpoint only when set to an explicit truthy value */
+  DEBUG_MODE?: string;
 }
 
 /**

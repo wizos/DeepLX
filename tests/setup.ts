@@ -39,7 +39,7 @@ global.createMockEnv = (): Env => ({
   PROXY_URLS:
     "https://test1.example.com/jsonrpc,https://test2.example.com/jsonrpc",
   PROXY_WEIGHTS: "1,1",
-  DEBUG_MODE: "true",
+  DEBUG_MODE: "false",
 });
 
 // Mock Request and Response for Cloudflare Workers environment
