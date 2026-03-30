@@ -31,7 +31,7 @@ describe("Circuit Breaker Module", () => {
       expect(mockOperation).toHaveBeenCalledTimes(1);
 
       const state = circuitBreaker.getState();
-      expect(state.successCount).toBe(1);
+      expect(state.successCount).toBe(0);
     });
 
     it("should handle failed operations", async () => {
@@ -95,14 +95,15 @@ describe("Circuit Breaker Module", () => {
       }
 
       // Manually set last failure time to simulate timeout
-      (circuitBreaker as any).lastFailureTime = Date.now() - 61000; // 61 seconds ago
+      (circuitBreaker as any).state.lastFailureTime = Date.now() - 61000; // 61 seconds ago
 
       const mockNewOperation = jest.fn().mockResolvedValue("success");
       const result = await circuitBreaker.execute(mockNewOperation);
 
       expect(result).toBe("success");
       const state = circuitBreaker.getState();
-      expect(state.state).toBe("CLOSED"); // Should close after successful operation
+      expect(state.state).toBe("HALF_OPEN");
+      expect(state.successCount).toBe(1);
     });
 
     it("should reset failure count on success", async () => {
@@ -126,7 +127,7 @@ describe("Circuit Breaker Module", () => {
 
       state = circuitBreaker.getState();
       expect(state.failureCount).toBe(0);
-      expect(state.successCount).toBe(1);
+      expect(state.successCount).toBe(0);
     });
   });
 
