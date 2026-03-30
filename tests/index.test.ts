@@ -13,7 +13,9 @@ jest.mock("../src/lib", () => ({
 
 jest.mock("../src/lib/security", () => ({
   getSecureClientIP: jest.fn().mockReturnValue("192.168.1.1"),
-  handleCORSPreflight: jest.fn().mockReturnValue("CORS response"),
+  handleCORSPreflight: jest
+    .fn()
+    .mockReturnValue(new Response(null, { status: 200 })),
   validateLanguageCode: jest
     .fn()
     .mockImplementation((code) => code?.toLowerCase()),
@@ -248,6 +250,17 @@ describe("Main App", () => {
     });
 
     it("should handle text that is too long", async () => {
+      const { query, getCachedTranslation } = require("../src/lib");
+
+      getCachedTranslation.mockResolvedValueOnce(null);
+      query.mockResolvedValueOnce({
+        code: 200,
+        data: "trimmed response",
+        id: 12345,
+        source_lang: "AUTO",
+        target_lang: "ZH",
+      });
+
       const request = new Request("http://localhost/translate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -328,9 +341,9 @@ describe("Main App", () => {
       const mockContext = {
         waitUntil: jest.fn(),
         passThroughOnException: jest.fn(),
-      } as ExecutionContext;
+      } as unknown as ExecutionContext;
 
-      await indexModule.scheduled(mockEvent, mockEnv, mockContext);
+      await indexModule.default.scheduled(mockEvent, mockEnv, mockContext);
 
       expect(mockContext.waitUntil).toHaveBeenCalled();
     });

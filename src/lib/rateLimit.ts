@@ -76,7 +76,10 @@ export function getClientIP(request: Request): string {
  * @param env Environment bindings containing KV namespaces
  * @returns Promise<boolean> - True if request is allowed, false if rate limited
  */
-async function checkRateLimit(clientIP: string, env: Env): Promise<boolean> {
+export async function checkRateLimit(
+  clientIP: string,
+  env: Env
+): Promise<boolean> {
   const key = `rate_limit:${clientIP}`;
   const now = Date.now();
 

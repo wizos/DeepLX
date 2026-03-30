@@ -76,7 +76,7 @@ export function createStandardResponse(
   source_lang?: string,
   target_lang?: string
 ): ResponseParams {
-  const responseId = id || Math.floor(Math.random() * 10000000000);
+  const responseId = id ?? Math.floor(Math.random() * 10000000000);
 
   // If status code is not 200, set everything to null except id
   if (code !== 200) {

@@ -63,7 +63,7 @@ export function validateTextLength(text: string): {
   isValid: boolean;
   suggestedAction: string;
 } {
-  const trimmedText = text;
+  const trimmedText = text.trim();
 
   if (trimmedText.length === 0) {
     return {

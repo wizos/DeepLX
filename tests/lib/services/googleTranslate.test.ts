@@ -3,7 +3,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "@jest/globals";
-import { translateWithGoogle } from "../../src/lib/services/googleTranslate";
+import { translateWithGoogle } from "../../../src/lib/services/googleTranslate";
 
 describe("Google Translate Service", () => {
   let mockEnv: any;
