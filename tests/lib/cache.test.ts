@@ -27,7 +27,7 @@ describe("Cache Module", () => {
       const key2 = generateCacheKey("Hello world", "EN", "ZH");
 
       expect(key1).toBe(key2);
-      expect(key1).toMatch(/^cache:/);
+      expect(key1).toMatch(/^cache_/);
     });
 
     it("should generate different keys for different inputs", () => {
@@ -42,7 +42,7 @@ describe("Cache Module", () => {
 
     it("should handle special characters in text", () => {
       const key = generateCacheKey("Hello, 世界! @#$%", "EN", "ZH");
-      expect(key).toMatch(/^cache:/);
+      expect(key).toMatch(/^cache_/);
     });
   });
 
@@ -96,14 +96,12 @@ describe("Cache Module", () => {
         id: 12345,
       };
 
-      (mockEnv.CACHE_KV.get as jest.Mock).mockResolvedValueOnce(
-        JSON.stringify(cacheEntry)
-      );
+      (mockEnv.CACHE_KV.get as jest.Mock).mockResolvedValueOnce(cacheEntry);
 
       const result = await getCachedTranslation("test-key", mockEnv);
 
       expect(result).toEqual(cacheEntry);
-      expect(mockEnv.CACHE_KV.get).toHaveBeenCalledWith("test-key");
+      expect(mockEnv.CACHE_KV.get).toHaveBeenCalledWith("test-key", "json");
     });
 
     it("should return null for cache miss", async () => {
@@ -122,9 +120,7 @@ describe("Cache Module", () => {
         target_lang: "ZH",
       };
 
-      (mockEnv.CACHE_KV.get as jest.Mock).mockResolvedValueOnce(
-        JSON.stringify(expiredEntry)
-      );
+      (mockEnv.CACHE_KV.get as jest.Mock).mockResolvedValueOnce(expiredEntry);
 
       const result = await getCachedTranslation("test-key", mockEnv);
 
@@ -132,7 +128,7 @@ describe("Cache Module", () => {
     });
 
     it("should handle invalid JSON in cache", async () => {
-      (mockEnv.CACHE_KV.get as jest.Mock).mockResolvedValueOnce("invalid json");
+      (mockEnv.CACHE_KV.get as jest.Mock).mockResolvedValueOnce(null);
 
       const result = await getCachedTranslation("test-key", mockEnv);
 

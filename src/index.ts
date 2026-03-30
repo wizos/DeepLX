@@ -101,6 +101,10 @@ async function handleTranslation(c: any, provider: "deepl" | "google") {
       return c.json(createStandardResponse(400, null), 400);
     }
 
+    if (!params.text.trim()) {
+      return c.json(createStandardResponse(400, null), 400);
+    }
+
     // Basic text validation
     let sanitizedText;
     try {
@@ -235,7 +239,7 @@ app
       // Import buildRequestBody from query module for debugging
       const { buildRequestBody } = await import("./lib/query");
 
-      if (!params.text) {
+      if (!params.text || typeof params.text !== "string") {
         return c.json(
           createStandardResponse(400, "Missing text parameter"),
           400
@@ -244,7 +248,7 @@ app
 
       // Basic text validation
       const sanitizedText = params.text;
-      if (!sanitizedText) {
+      if (!sanitizedText.trim()) {
         return c.json(
           createStandardResponse(400, "Invalid text parameter"),
           400

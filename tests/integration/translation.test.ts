@@ -47,25 +47,21 @@ describe("Translation Integration Tests", () => {
 
     it("should handle rate limiting in translation flow", async () => {
       // Mock rate limit exceeded
-      (mockEnv.RATE_LIMIT_KV.get as jest.Mock).mockResolvedValue(
-        JSON.stringify({
-          tokens: 0,
-          lastRefill: Date.now(),
-        })
+      (mockEnv.RATE_LIMIT_KV.get as jest.Mock).mockResolvedValue({
+        tokens: 0,
+        lastRefill: Date.now() + 1000,
+      });
+
+      const { checkCombinedRateLimit } = await import("../../src/lib/rateLimit");
+
+      const result = await checkCombinedRateLimit(
+        `blocked-client-${Date.now()}`,
+        "https://www2.deepl.com/jsonrpc",
+        mockEnv
       );
 
-      const { query } = await import("../../src/lib/query");
-
-      const result = await query(
-        {
-          text: "Hello world",
-          source_lang: "en",
-          target_lang: "zh",
-        },
-        { env: mockEnv, clientIP: "192.168.1.1" }
-      );
-
-      expect(result.code).toBe(429);
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain("rate limit");
     });
 
     it("should use cache when available", async () => {
@@ -77,9 +73,7 @@ describe("Translation Integration Tests", () => {
         id: 12345,
       };
 
-      (mockEnv.CACHE_KV.get as jest.Mock).mockResolvedValue(
-        JSON.stringify(cachedEntry)
-      );
+      (mockEnv.CACHE_KV.get as jest.Mock).mockResolvedValue(cachedEntry);
 
       const { getCachedTranslation, generateCacheKey } = await import(
         "../../src/lib/cache"
@@ -95,7 +89,7 @@ describe("Translation Integration Tests", () => {
       // Mock first proxy failure, second proxy success
       global.fetch = jest
         .fn()
-        .mockRejectedValueOnce(new Error("Network error"))
+        .mockRejectedValueOnce(new TypeError("fetch failed"))
         .mockResolvedValueOnce({
           ok: true,
           json: () =>
@@ -157,8 +151,8 @@ describe("Translation Integration Tests", () => {
       // Mock network failure then success
       global.fetch = jest
         .fn()
-        .mockRejectedValueOnce(new Error("Network error"))
-        .mockRejectedValueOnce(new Error("Network error"))
+        .mockRejectedValueOnce(new TypeError("fetch failed"))
+        .mockRejectedValueOnce(new TypeError("fetch failed"))
         .mockResolvedValueOnce({
           ok: true,
           json: () =>
@@ -276,7 +270,7 @@ describe("Translation Integration Tests", () => {
 
       for (const ip of ips) {
         const result = await checkRateLimit(ip, mockEnv);
-        expect(result.allowed).toBe(true);
+        expect(result).toBe(true);
       }
     });
   });

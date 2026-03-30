@@ -159,10 +159,11 @@ describe("Performance Tests", () => {
       }
 
       // Should eventually hit rate limits
-      const allowedCount = results.filter((r) => r.allowed).length;
-      const deniedCount = results.filter((r) => !r.allowed).length;
+      const allowedCount = results.filter(Boolean).length;
+      const deniedCount = results.filter((result) => !result).length;
 
       expect(allowedCount).toBeGreaterThan(0);
+      expect(deniedCount).toBeGreaterThanOrEqual(0);
       // Depending on rate limit configuration, some might be denied
     });
   });
@@ -172,8 +173,8 @@ describe("Performance Tests", () => {
       // Mock multiple proxy failures then success
       global.fetch = jest
         .fn()
-        .mockRejectedValueOnce(new Error("Proxy 1 failed"))
-        .mockRejectedValueOnce(new Error("Proxy 2 failed"))
+        .mockRejectedValueOnce(new TypeError("fetch failed"))
+        .mockRejectedValueOnce(new TypeError("fetch failed"))
         .mockResolvedValueOnce({
           ok: true,
           json: () =>

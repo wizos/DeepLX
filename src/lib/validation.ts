@@ -3,10 +3,12 @@
  * Provides comprehensive validation for translation requests
  */
 
+import { PAYLOAD_LIMITS } from "./config";
+
 /**
  * Configuration constants for validation
  */
-const MAX_TEXT_LENGTH = 50000; // 50KB maximum text length
+const MAX_TEXT_LENGTH = PAYLOAD_LIMITS.MAX_TEXT_LENGTH;
 
 /**
  * Result interface for validation operations
@@ -40,7 +42,7 @@ export function validateTranslationRequest(input: any): ValidationResult {
     errors.push("Text field is required");
   } else if (typeof input.text !== "string") {
     errors.push("Text field must be a string");
-  } else if (input.text.length === 0) {
+  } else if (input.text.trim().length === 0) {
     errors.push("Text field cannot be empty");
   } else if (input.text.length > MAX_TEXT_LENGTH) {
     errors.push(
@@ -68,9 +70,15 @@ export function validateTranslationRequest(input: any): ValidationResult {
 
   // Create sanitized input object
   const sanitizedInput = {
-    text: typeof input.text === "string" ? input.text : "",
-    source_lang: input.source_lang ? input.source_lang.toLowerCase() : "auto",
-    target_lang: input.target_lang ? input.target_lang.toLowerCase() : "en",
+    text: typeof input.text === "string" ? input.text.trim() : "",
+    source_lang:
+      typeof input.source_lang === "string"
+        ? input.source_lang.toLowerCase()
+        : "auto",
+    target_lang:
+      typeof input.target_lang === "string"
+        ? input.target_lang.toLowerCase()
+        : "en",
   };
 
   return {
