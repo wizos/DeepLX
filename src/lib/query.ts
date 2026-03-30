@@ -201,14 +201,14 @@ function buildRequestBody(data: RequestParams) {
   }
 
   // Ensure text is not empty
-  const trimmedText = data.text;
-  if (!trimmedText) {
+  const requestText = data.text;
+  if (!requestText.trim()) {
     throw new Error("Invalid request parameters: text cannot be empty");
   }
 
   // Apply more conservative text length limits to prevent 413 errors
   const maxTextLength = PAYLOAD_LIMITS.MAX_TEXT_LENGTH;
-  if (trimmedText.length > maxTextLength) {
+  if (requestText.length > maxTextLength) {
     throw new Error(
       `Text too long. Maximum length is ${maxTextLength} characters to prevent payload size errors.`
     );
@@ -219,7 +219,10 @@ function buildRequestBody(data: RequestParams) {
   const targetLang = data.target_lang || "en";
 
   // Log language normalization for debugging (only in debug mode)
-  if (typeof globalThis !== "undefined" && globalThis.DEBUG_MODE) {
+  const debugGlobal = globalThis as typeof globalThis & {
+    DEBUG_MODE?: boolean;
+  };
+  if (typeof globalThis !== "undefined" && debugGlobal.DEBUG_MODE) {
     if (sourceLang !== "auto") {
       console.debug(`Source language normalized: ${sourceLang}`);
     }
@@ -228,10 +231,10 @@ function buildRequestBody(data: RequestParams) {
 
   const requestData = buildRequestParams(sourceLang, targetLang);
   requestData.params.texts = [
-    { text: trimmedText, requestAlternatives: REQUEST_ALTERNATIVES },
+    { text: requestText, requestAlternatives: REQUEST_ALTERNATIVES },
   ];
 
-  const letterICount = countLetterI(trimmedText);
+  const letterICount = countLetterI(requestText);
   const timestamp = getTimestamp(letterICount);
 
   // Validate timestamp before assigning

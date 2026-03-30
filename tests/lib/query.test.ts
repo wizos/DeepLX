@@ -159,9 +159,9 @@ describe("Query Module", () => {
     });
 
     it("should handle timeout errors", async () => {
-      mockFetch.mockImplementationOnce(
-        () => new Promise((resolve) => setTimeout(resolve, 35000))
-      );
+      const timeoutError = new Error("Request timed out");
+      timeoutError.name = "AbortError";
+      mockFetch.mockRejectedValueOnce(timeoutError);
 
       const result = await query({
         text: "Hello world",

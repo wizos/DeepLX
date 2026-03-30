@@ -11,6 +11,9 @@ import {
   ResponseParams,
 } from "../types";
 
+type GoogleTranslateSegment = [string?, ...unknown[]];
+type GoogleTranslateBody = [GoogleTranslateSegment[]?, unknown?, string?];
+
 /**
  * Translate text using Google Translate API
  * @param params - Translation parameters (text, source_lang, target_lang)
@@ -55,18 +58,20 @@ export async function translateWithGoogle(
       );
     }
 
-    const googleResponseBody = await googleResponse.json();
+    const googleResponseBody =
+      (await googleResponse.json()) as GoogleTranslateBody;
 
     // Parse the complex Google Translate response
     // The response is a deeply nested array. The translated text is
     // typically in the first element. We concatenate the pieces.
     let translatedText = "";
-    if (googleResponseBody && googleResponseBody[0]) {
-      googleResponseBody[0].forEach((segment: any) => {
-        if (segment[0]) {
-          translatedText += segment[0];
-        }
-      });
+    const segments = Array.isArray(googleResponseBody?.[0])
+      ? googleResponseBody[0]
+      : [];
+    for (const segment of segments) {
+      if (typeof segment?.[0] === "string") {
+        translatedText += segment[0];
+      }
     }
 
     if (!translatedText) {
@@ -74,7 +79,10 @@ export async function translateWithGoogle(
     }
 
     // Format the response to match the DeepLX API
-    const detectedSourceLang = googleResponseBody[2] || source_lang;
+    const detectedSourceLang =
+      typeof googleResponseBody?.[2] === "string"
+        ? googleResponseBody[2]
+        : source_lang;
 
     return createStandardResponse(
       200,

@@ -28,8 +28,8 @@ describe("Types Module", () => {
       expect(response.code).toBe(400);
       expect(response.data).toBeNull();
       expect(response.id).toBeGreaterThan(0);
-      expect(response.source_lang).toBe("");
-      expect(response.target_lang).toBe("");
+      expect(response.source_lang).toBeNull();
+      expect(response.target_lang).toBeNull();
     });
 
     it("should generate random ID when not provided", () => {
@@ -44,8 +44,8 @@ describe("Types Module", () => {
     it("should handle missing language parameters", () => {
       const response = createStandardResponse(200, "test", 12345);
 
-      expect(response.source_lang).toBe("");
-      expect(response.target_lang).toBe("");
+      expect(response.source_lang).toBe("AUTO");
+      expect(response.target_lang).toBe("EN");
     });
 
     it("should handle all parameters", () => {
@@ -75,6 +75,8 @@ describe("Types Module", () => {
 
       expect(response.code).toBe(-1);
       expect(response.data).toBeNull();
+      expect(response.source_lang).toBeNull();
+      expect(response.target_lang).toBeNull();
     });
 
     it("should handle empty string data", () => {

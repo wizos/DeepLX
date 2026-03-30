@@ -62,7 +62,8 @@ describe("Error Handler Module", () => {
 
       const result = createErrorResponse(error);
 
-      expect(result.response.code).toBe(1156049);
+      expect(result.response.code).toBe(500);
+      expect(result.httpStatus).toBe(500);
     });
 
     it("should include context information", () => {

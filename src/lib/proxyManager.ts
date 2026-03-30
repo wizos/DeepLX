@@ -29,9 +29,9 @@ const ACCEPT_LANGUAGES = [
  * Get available proxy endpoints from environment configuration
  * Parses and validates proxy URLs from environment variables
  * @param env Environment bindings containing proxy configuration
- * @returns Promise<ProxyEndpoint[]> - Array of available proxy endpoints
+ * @returns ProxyEndpoint[] - Array of available proxy endpoints
  */
-export async function getProxyEndpoints(env: Env): Promise<ProxyEndpoint[]> {
+export function getProxyEndpoints(env: Env): ProxyEndpoint[] {
   // Get proxy URLs from environment variables
   const proxyUrls = env.PROXY_URLS
     ? env.PROXY_URLS.split(",").map((url) => url.trim())
@@ -51,7 +51,7 @@ export async function getProxyEndpoints(env: Env): Promise<ProxyEndpoint[]> {
  */
 export async function selectProxy(env: Env): Promise<ProxyEndpoint | null> {
   try {
-    const proxies = await getProxyEndpoints(env);
+    const proxies = getProxyEndpoints(env);
 
     if (proxies.length === 0) {
       return null;

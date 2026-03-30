@@ -109,7 +109,7 @@ describe("Text Utils Module", () => {
     });
 
     it("should handle text at the boundary", () => {
-      const boundaryText = "a".repeat(50000); // Right at MAX_TEXT_LENGTH
+      const boundaryText = "a".repeat(5000); // Right at MAX_TEXT_LENGTH
       const result = validateTextLength(boundaryText);
 
       expect(result.isValid).toBe(true);

@@ -3,13 +3,20 @@
  * Global test configuration and utilities
  */
 
+const testGlobal = globalThis as typeof globalThis & {
+  console: Console;
+  createMockEnv?: () => Env;
+  Request: typeof Request;
+  Response: typeof Response;
+};
+
 // Mock global fetch if not available
-if (!global.fetch) {
-  global.fetch = jest.fn();
+if (!testGlobal.fetch) {
+  testGlobal.fetch = jest.fn() as typeof fetch;
 }
 
 // Mock console methods to reduce noise in tests
-global.console = {
+testGlobal.console = {
   ...console,
   log: jest.fn(),
   debug: jest.fn(),
@@ -19,18 +26,18 @@ global.console = {
 };
 
 // Global test utilities
-global.createMockEnv = (): Env => ({
+testGlobal.createMockEnv = (): Env => ({
   CACHE_KV: {
-    get: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
-    list: jest.fn(),
+    get: jest.fn().mockResolvedValue(null),
+    put: jest.fn().mockResolvedValue(undefined),
+    delete: jest.fn().mockResolvedValue(undefined),
+    list: jest.fn().mockResolvedValue({ keys: [], list_complete: true }),
   } as any,
   RATE_LIMIT_KV: {
-    get: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
-    list: jest.fn(),
+    get: jest.fn().mockResolvedValue(null),
+    put: jest.fn().mockResolvedValue(undefined),
+    delete: jest.fn().mockResolvedValue(undefined),
+    list: jest.fn().mockResolvedValue({ keys: [], list_complete: true }),
   } as any,
 
   ANALYTICS: {
@@ -43,8 +50,8 @@ global.createMockEnv = (): Env => ({
 });
 
 // Mock Request and Response for Cloudflare Workers environment
-global.Request =
-  global.Request ||
+testGlobal.Request =
+  testGlobal.Request ||
   class MockRequest {
     constructor(public url: string, public init?: RequestInit) {}
     json() {
@@ -56,8 +63,8 @@ global.Request =
     headers = new Map();
   };
 
-global.Response =
-  global.Response ||
+testGlobal.Response =
+  testGlobal.Response ||
   class MockResponse {
     constructor(public body?: any, public init?: ResponseInit) {}
     json() {
@@ -73,14 +80,14 @@ global.Response =
 
 // Extend Jest matchers
 declare global {
+  var createMockEnv: () => Env;
+
   namespace jest {
     interface Matchers<R> {
       toBeValidTranslationResponse(): R;
       toBeValidErrorResponse(): R;
     }
   }
-
-  function createMockEnv(): Env;
 }
 
 expect.extend({
@@ -116,3 +123,5 @@ expect.extend({
     };
   },
 });
+
+export {};
