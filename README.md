@@ -2,24 +2,32 @@
 
 ***[汉语](README.zh.md)***
 
-[![License](https://img.shields.io/github/license/xixu-me/deeplx)](#-license)
-[![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange?logo=cloudflare)](#-self-deployment)
+[![License](https://img.shields.io/github/license/xixu-me/deeplx)](./LICENSE)
+[![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange?logo=cloudflare)](#self-deployment)
 
-Currently, the best serverless implementation of [DeepLX](https://github.com/OwO-Network/DeepLX), optimized for Cloudflare Workers. Through intelligent proxy endpoint rotation, advanced rate limiting algorithms, and circuit breaker mechanisms, it almost completely avoids HTTP 429 errors, providing higher request rate limits and lower network round-trip times than traditional translation APIs. **Now supports both DeepL and Google Translate services.**
+DeepLX is a serverless translation service optimized for Cloudflare Workers. Through intelligent proxy endpoint rotation, advanced rate limiting algorithms, caching, and circuit breakers, it avoids HTTP 429 errors more effectively than traditional translation API setups while delivering lower latency. It supports both DeepL and Google Translate.
 
-## 🆓 **Completely FREE Alternative to Translation APIs**
+> [!NOTE]
+> Unlike paid translation APIs, DeepLX is completely free to use. There are no API keys, subscription fees, or usage-based charges.
+
+> [!WARNING]
+> The pre-deployed public instance is temporarily suspended because of excessive traffic. Use the self-deployment instructions below to keep using the service.
+
+<a id="why-deeplx"></a>
+
+## Why DeepLX
 
 **Unlike paid translation APIs, DeepLX is completely free to use** - no API keys, no subscription fees, no usage limits. Simply deploy once and enjoy unlimited translation requests without any cost concerns.
 
-## ✨ Features & Performance Advantages
+## Features & Performance Advantages
 
-### 🌐 Multi-Provider Support
+### Multi-Provider Support
 
 - **DeepL Translation** (`/deepl`) - High-quality translation with advanced AI
 - **Google Translate** (`/google`) - Wide language support and fast processing  
 - **Legacy Compatibility** (`/translate`) - Backward compatible endpoint using DeepL
 
-### 🚀 Performance Advantages
+### Performance Advantages
 
 DeepLX has significant improvements in performance and stability compared to the DeepL API. Here are key metric comparisons based on specific network environments:
 
@@ -46,13 +54,13 @@ DeepLX has significant improvements in performance and stability compared to the
 - **Circuit Breaker Mechanism**: Automatic failover for failed endpoints ensures service continuity
 - **Edge Computing**: Global deployment on Cloudflare Workers reduces latency
 
-### 🛡️ Stability Guarantees
+### Stability Guarantees
 
 - **Avoid HTTP 429 Errors**: Almost completely avoids rate limiting through proxy endpoint rotation and token bucket algorithm
 - **Circuit Breaker Mechanism**: Automatically detects failed endpoints and performs failover
 - **Exponential Backoff Retry**: Intelligent retry mechanism improves success rate
 
-### 🔒 Security Features
+### Security Features
 
 - **Input Validation**: Comprehensive parameter validation and text sanitization
 - **Rate Limiting**: Multi-dimensional rate limiting based on client IP and proxy endpoints
@@ -60,7 +68,9 @@ DeepLX has significant improvements in performance and stability compared to the
 - **Security Headers**: Automatically adds security-related HTTP headers
 - **Error Sanitization**: Sensitive information is never exposed
 
-## 🏗️ Architecture Overview
+<a id="architecture-overview"></a>
+
+## Architecture Overview
 
 ```mermaid
 graph TB
@@ -166,13 +176,18 @@ graph TB
     class DeepLAPI,GoogleAPI,XDPL externalClass
 ```
 
-## 🌐 Online Service
+<a id="hosted-service"></a>
 
-> **⚠️ Important Notice**: The pre-deployed instance has been temporarily suspended due to excessive requests. Please [self-deploy](#-self-deployment) to continue using the service.
+## Hosted Service
+
+> [!WARNING]
+> The pre-deployed instance has been temporarily suspended due to excessive requests. Please [self-deploy](#self-deployment) to continue using the service.
 
 ~~**Pre-deployed Instance**: `https://dplx.xi-xu.me`~~ (Temporarily Suspended)
 
-## 📦 Quick Start
+<a id="quick-start"></a>
+
+## Quick Start
 
 ### cURL Examples
 
@@ -328,7 +343,9 @@ except Exception as e:
     print(f"Error: {e}")
 ```
 
-## API Client Integration
+<a id="client-integrations"></a>
+
+## Client Integrations
 
 Configure API clients to use the pre-deployed instance:
 
@@ -374,7 +391,9 @@ Refer to [Advanced Options](https://github.com/Byaidu/PDFMathTranslate?tab=readm
 2. Download and install the [bob-plugin-deeplx](https://github.com/missuo/bob-plugin-deeplx) plugin
 3. Configure the plugin to use `https://dplx.xi-xu.me/deepl`
 
-## 🚀 Self-deployment
+<a id="self-deployment"></a>
+
+## Self-Deployment
 
 [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/xixu-me/DeepLX)
 
@@ -434,7 +453,9 @@ npx wrangler dev
 npx wrangler deploy
 ```
 
-## 🔧 Proxy Endpoint Deployment
+<a id="proxy-endpoint-deployment"></a>
+
+## Proxy Endpoint Deployment
 
 For optimal performance and stability, it's recommended to deploy as many [XDPL](https://github.com/xixu-me/XDPL) proxy endpoints as possible:
 
@@ -455,7 +476,9 @@ For optimal performance and stability, it's recommended to deploy as many [XDPL]
 }
 ```
 
-## 📖 API Reference
+<a id="api-reference"></a>
+
+## API Reference
 
 ### Available Endpoints
 
@@ -523,7 +546,8 @@ For optimal performance and stability, it's recommended to deploy as many [XDPL]
 
 **Request Headers**: `Content-Type: application/json`
 
-**Note**: This is a legacy endpoint that uses DeepL. For new integrations, please use `/deepl` instead.
+> [!NOTE]
+> This is a legacy endpoint that uses DeepL. For new integrations, please use `/deepl` instead.
 
 **Request Parameters**:
 
@@ -600,7 +624,9 @@ Used to verify request format and troubleshoot issues.
 | 500 | Internal server error |
 | 503 | Service temporarily unavailable |
 
-## ⚙️ Configuration
+<a id="configuration"></a>
+
+## Configuration
 
 ### Environment Variables
 
@@ -638,7 +664,21 @@ export const PAYLOAD_LIMITS = {
 };
 ```
 
-## 🧪 Testing
+<a id="development"></a>
+
+## Development
+
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start local development with Wrangler |
+| `npm run deploy` | Deploy to Cloudflare Workers |
+| `npm run cf-typegen` | Generate Cloudflare Workers types |
+| `npm run lint` | Run TypeScript type checking |
+| `npm test` | Run the full test suite |
+
+<a id="testing"></a>
+
+## Testing
 
 ```bash
 # Run all tests
@@ -657,7 +697,9 @@ npm run test:performance
 npm run test:coverage
 ```
 
-## 🔧 Troubleshooting
+<a id="troubleshooting"></a>
+
+## Troubleshooting
 
 ### Common Issues
 
@@ -699,14 +741,18 @@ curl -X POST https://your-domain.workers.dev/debug \
   -d '{"text": "test", "source_lang": "EN", "target_lang": "ZH"}'
 ```
 
-## 🙏 Acknowledgments
+<a id="project-information"></a>
+
+## Project Information
+
+### Acknowledgments
 
 - [OwO-Network/DeepLX](https://github.com/OwO-Network/DeepLX) - Original implementation based on Go programming language
 - [Cloudflare Workers](https://workers.cloudflare.com/) - Hosting platform
 - [Hono](https://hono.dev/) - Fast web framework
 - [XDPL](https://github.com/xixu-me/XDPL) - Proxy endpoint solution
 
-## 🤝 Contributing
+### Get Involved
 
 We welcome all forms of contributions! Please check the [Contributing Guide](CONTRIBUTING.md) to learn how to participate in repository development.
 
@@ -715,7 +761,9 @@ We welcome all forms of contributions! Please check the [Contributing Guide](CON
 3. **Improve Documentation**: Fix errors, add examples, improve descriptions
 4. **Test Feedback**: Test in different environments and provide feedback
 
-## 🌟 Star History
+For repository workflow details, see [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+### Star History
 
 <a href="https://www.star-history.com/#xixu-me/DeepLX&Date">
  <picture>
@@ -725,13 +773,13 @@ We welcome all forms of contributions! Please check the [Contributing Guide](CON
  </picture>
 </a>
 
-## 📞 Contact
+### Contact
 
 - **Author**: [Xi Xu](https://xi-xu.me)
 - **Email**: [Contact Email](mailto:i@xi-xu.me)
 - **Sponsor**: [Sponsor Link](https://xi-xu.me/#sponsorships)
 
-## ⚠️ Disclaimer
+### Disclaimer
 
 This repository is for learning and research purposes only. When using this repository, please comply with the following terms:
 
@@ -758,7 +806,7 @@ By using this repository, you agree to:
 
 **Please use this repository only after fully understanding and agreeing to the above terms.**
 
-## 📝 License
+### Project Notes
 
 This repository is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
