@@ -10,9 +10,6 @@ DeepLX is a serverless translation service optimized for Cloudflare Workers. Thr
 > [!NOTE]
 > Unlike paid translation APIs, DeepLX is completely free to use. There are no API keys, subscription fees, or usage-based charges.
 
-> [!WARNING]
-> The pre-deployed public instance is temporarily suspended because of excessive traffic. Use the self-deployment instructions below to keep using the service.
-
 ## Why DeepLX
 
 **Unlike paid translation APIs, DeepLX is completely free to use** - no API keys, no subscription fees, no usage limits. Simply deploy once and enjoy unlimited translation requests without any cost concerns.
