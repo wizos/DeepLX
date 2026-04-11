@@ -13,8 +13,6 @@ DeepLX is a serverless translation service optimized for Cloudflare Workers. Thr
 > [!WARNING]
 > The pre-deployed public instance is temporarily suspended because of excessive traffic. Use the self-deployment instructions below to keep using the service.
 
-<a id="why-deeplx"></a>
-
 ## Why DeepLX
 
 **Unlike paid translation APIs, DeepLX is completely free to use** - no API keys, no subscription fees, no usage limits. Simply deploy once and enjoy unlimited translation requests without any cost concerns.
@@ -67,8 +65,6 @@ DeepLX has significant improvements in performance and stability compared to the
 - **CORS Support**: Flexible cross-origin resource sharing configuration
 - **Security Headers**: Automatically adds security-related HTTP headers
 - **Error Sanitization**: Sensitive information is never exposed
-
-<a id="architecture-overview"></a>
 
 ## Architecture Overview
 
@@ -176,16 +172,12 @@ graph TB
     class DeepLAPI,GoogleAPI,XDPL externalClass
 ```
 
-<a id="hosted-service"></a>
-
 ## Hosted Service
 
 > [!WARNING]
 > The pre-deployed instance has been temporarily suspended due to excessive requests. Please [self-deploy](#self-deployment) to continue using the service.
 
 ~~**Pre-deployed Instance**: `https://dplx.xi-xu.me`~~ (Temporarily Suspended)
-
-<a id="quick-start"></a>
 
 ## Quick Start
 
@@ -343,8 +335,6 @@ except Exception as e:
     print(f"Error: {e}")
 ```
 
-<a id="client-integrations"></a>
-
 ## Client Integrations
 
 Configure API clients to use the pre-deployed instance:
@@ -390,8 +380,6 @@ Refer to [Advanced Options](https://github.com/Byaidu/PDFMathTranslate?tab=readm
 1. [Download and install Bob from the Mac App Store](https://apps.apple.com/app/id1630034110)
 2. Download and install the [bob-plugin-deeplx](https://github.com/missuo/bob-plugin-deeplx) plugin
 3. Configure the plugin to use `https://dplx.xi-xu.me/deepl`
-
-<a id="self-deployment"></a>
 
 ## Self-Deployment
 
@@ -453,8 +441,6 @@ npx wrangler dev
 npx wrangler deploy
 ```
 
-<a id="proxy-endpoint-deployment"></a>
-
 ## Proxy Endpoint Deployment
 
 For optimal performance and stability, it's recommended to deploy as many [XDPL](https://github.com/xixu-me/XDPL) proxy endpoints as possible:
@@ -475,8 +461,6 @@ For optimal performance and stability, it's recommended to deploy as many [XDPL]
   }
 }
 ```
-
-<a id="api-reference"></a>
 
 ## API Reference
 
@@ -624,8 +608,6 @@ Used to verify request format and troubleshoot issues.
 | 500 | Internal server error |
 | 503 | Service temporarily unavailable |
 
-<a id="configuration"></a>
-
 ## Configuration
 
 ### Environment Variables
@@ -664,8 +646,6 @@ export const PAYLOAD_LIMITS = {
 };
 ```
 
-<a id="development"></a>
-
 ## Development
 
 | Command | Description |
@@ -675,8 +655,6 @@ export const PAYLOAD_LIMITS = {
 | `npm run cf-typegen` | Generate Cloudflare Workers types |
 | `npm run lint` | Run TypeScript type checking |
 | `npm test` | Run the full test suite |
-
-<a id="testing"></a>
 
 ## Testing
 
@@ -696,8 +674,6 @@ npm run test:performance
 # Generate coverage report
 npm run test:coverage
 ```
-
-<a id="troubleshooting"></a>
 
 ## Troubleshooting
 
@@ -740,8 +716,6 @@ curl -X POST https://your-domain.workers.dev/debug \
   -H "Content-Type: application/json" \
   -d '{"text": "test", "source_lang": "EN", "target_lang": "ZH"}'
 ```
-
-<a id="project-information"></a>
 
 ## Project Information
 
