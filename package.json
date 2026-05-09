@@ -1,7 +1,7 @@
 {
   "author": "xixu-me",
   "dependencies": {
-    "hono": "^4.12.16"
+    "hono": "^4.12.18"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260503.1",
