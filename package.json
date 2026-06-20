@@ -10,7 +10,7 @@
     "jest": "^30.4.2",
     "ts-jest": "^29.4.11",
     "typescript": "^5.9.3",
-    "wrangler": "^4.100.0"
+    "wrangler": "^4.103.0"
   },
   "engines": {
     "node": ">=18.0.0"
