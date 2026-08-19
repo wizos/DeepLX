@@ -29,7 +29,7 @@ export async function translateWithGoogle(
 
     // Construct the request to Google Translate's internal API
     const googleApiUrl = new URL(
-      "https://translate.google.com/translate_a/single"
+      "https://translate.googleapis.com/translate_a/single"
     );
     googleApiUrl.searchParams.append("client", "gtx"); // Google Translate web client
     googleApiUrl.searchParams.append(
