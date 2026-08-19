@@ -21,6 +21,10 @@ jest.mock("../src/lib/security", () => ({
     .mockImplementation((code) => code?.toLowerCase()),
 }));
 
+jest.mock("../src/lib/services/googleTranslate", () => ({
+  translateWithGoogle: jest.fn(),
+}));
+
 jest.mock("../src/lib/env", () => ({
   validateEnvironment: jest.fn().mockReturnValue([]),
 }));
@@ -294,6 +298,38 @@ describe("Main App", () => {
       const response = await app.fetch(request, mockEnv);
 
       expect(response.status).toBe(500);
+    });
+
+    it("should fall back to Google when XDPL is rate limited", async () => {
+      const { getCachedTranslation, query } = require("../src/lib");
+      const { translateWithGoogle } = require("../src/lib/services/googleTranslate");
+
+      getCachedTranslation.mockResolvedValueOnce(null);
+      query.mockResolvedValueOnce({ code: 429, data: null });
+      translateWithGoogle.mockResolvedValueOnce({
+        code: 200,
+        data: "你好，世界",
+        id: 12345,
+        source_lang: "EN",
+        target_lang: "ZH",
+      });
+
+      const response = await app.fetch(
+        new Request("http://localhost/deepl", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: "Hello world",
+            source_lang: "en",
+            target_lang: "zh",
+          }),
+        }),
+        mockEnv
+      );
+
+      expect(response.status).toBe(200);
+      expect(translateWithGoogle).toHaveBeenCalledTimes(1);
+      expect((await response.json()).data).toBe("你好，世界");
     });
 
     it("should use default language codes", async () => {
