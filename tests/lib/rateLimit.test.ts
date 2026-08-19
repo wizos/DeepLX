@@ -16,7 +16,7 @@ describe("Rate Limit Module", () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe("getClientIP", () => {
@@ -90,10 +90,12 @@ describe("Rate Limit Module", () => {
     });
 
     it("should handle zero delay", async () => {
+      const timer = jest.spyOn(globalThis, "setTimeout");
       const startTime = Date.now();
       await delayRequest(0);
       const endTime = Date.now();
 
+      expect(timer).toHaveBeenCalledTimes(1);
       expect(endTime - startTime).toBeLessThan(50);
     });
   });
