@@ -52,7 +52,11 @@ export async function translateWithGoogle(
     };
 
     let googleResponse: Response | undefined;
-    for (const hostname of ["translate.googleapis.com", "translate.google.com"]) {
+    for (const hostname of [
+      "translate.googleapis.com",
+      "translate.google.com",
+      "translate.googleapis.com",
+    ]) {
       googleApiUrl.hostname = hostname;
       try {
         googleResponse = await fetch(googleApiUrl.toString(), requestInit);
