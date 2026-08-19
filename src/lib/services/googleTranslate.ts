@@ -31,18 +31,21 @@ export async function translateWithGoogle(
     const googleApiUrl = new URL(
       "https://translate.googleapis.com/translate_a/single"
     );
-    googleApiUrl.searchParams.append("client", "gtx"); // Google Translate web client
-    googleApiUrl.searchParams.append(
+    const googleParams = new URLSearchParams();
+    googleParams.append("client", "gtx"); // Google Translate web client
+    googleParams.append(
       "sl",
       source_lang === "auto" ? "auto" : source_lang.toLowerCase()
     ); // Source language
-    googleApiUrl.searchParams.append("tl", target_lang.toLowerCase()); // Target language
-    googleApiUrl.searchParams.append("dt", "t"); // 't' for translation of text
-    googleApiUrl.searchParams.append("q", text); // The text to translate
+    googleParams.append("tl", target_lang.toLowerCase()); // Target language
+    googleParams.append("dt", "t"); // 't' for translation of text
+    googleParams.append("q", text); // The text to translate
 
     const requestInit = {
-      method: "GET",
+      method: "POST",
+      body: googleParams.toString(),
       headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
         "User-Agent":
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         Accept: "application/json, text/plain, */*",

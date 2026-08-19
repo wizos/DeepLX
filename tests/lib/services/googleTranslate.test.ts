@@ -43,7 +43,8 @@ describe("Google Translate Service", () => {
       expect(fetch).toHaveBeenCalledWith(
         expect.stringContaining("translate.googleapis.com"),
         expect.objectContaining({
-          method: "GET",
+          method: "POST",
+          body: expect.stringContaining("q=Hello"),
           headers: expect.objectContaining({
             "User-Agent": expect.stringContaining("Mozilla"),
           }),
