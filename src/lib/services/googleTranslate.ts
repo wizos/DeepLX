@@ -40,8 +40,7 @@ export async function translateWithGoogle(
     googleApiUrl.searchParams.append("dt", "t"); // 't' for translation of text
     googleApiUrl.searchParams.append("q", text); // The text to translate
 
-    // Make the fetch call to Google Translate
-    const googleResponse = await fetch(googleApiUrl.toString(), {
+    const requestInit = {
       method: "GET",
       headers: {
         "User-Agent":
@@ -50,11 +49,22 @@ export async function translateWithGoogle(
         "Accept-Language": "en-US,en;q=0.9",
         Referer: "https://translate.google.com/",
       },
-    });
+    };
 
-    if (!googleResponse.ok) {
+    let googleResponse: Response | undefined;
+    for (const hostname of ["translate.googleapis.com", "translate.google.com"]) {
+      googleApiUrl.hostname = hostname;
+      try {
+        googleResponse = await fetch(googleApiUrl.toString(), requestInit);
+        if (googleResponse.ok) break;
+      } catch {
+        // Try the compatible fallback host.
+      }
+    }
+
+    if (!googleResponse?.ok) {
       throw new Error(
-        `Google Translate API responded with status ${googleResponse.status}`
+        `Google Translate API responded with status ${googleResponse?.status || 500}`
       );
     }
 

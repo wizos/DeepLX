@@ -75,6 +75,30 @@ describe("Google Translate Service", () => {
       expect(result.data).toBeNull();
     });
 
+    it("should use the compatible host when the primary is unavailable", async () => {
+      global.fetch = jest
+        .fn()
+        .mockResolvedValueOnce({ ok: false, status: 429 })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () =>
+            Promise.resolve([[["Hola", "Hello", null, null, 10]], null, "en"]),
+        });
+
+      const result = await translateWithGoogle({
+        text: "Hello",
+        source_lang: "en",
+        target_lang: "es",
+      });
+
+      expect(result.code).toBe(200);
+      expect(fetch).toHaveBeenCalledTimes(2);
+      expect(fetch).toHaveBeenLastCalledWith(
+        expect.stringContaining("translate.google.com"),
+        expect.any(Object)
+      );
+    });
+
     it("should handle network errors", async () => {
       // Mock fetch for network error
       global.fetch = jest.fn(() =>
