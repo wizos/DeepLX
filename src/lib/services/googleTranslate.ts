@@ -27,10 +27,20 @@ export async function translateWithGoogle(
   try {
     const { text, source_lang, target_lang } = params;
 
-    // Construct the request to Google Translate's internal API
-    const googleApiUrl = new URL(
-      "https://translate.googleapis.com/translate_a/single"
-    );
+    const proxyUrls = String(config?.env?.PROXY_URLS || "")
+      .split(",")
+      .filter(Boolean);
+    const proxyUrl = proxyUrls[Math.floor(Math.random() * proxyUrls.length)];
+    const attempts = [
+      [
+        proxyUrl
+          ? new URL("/google/translate_a/single", proxyUrl).toString()
+          : "https://translate.googleapis.com/translate_a/single",
+        "gtx",
+      ],
+      ["https://translate.googleapis.com/translate_a/single", "gtx"],
+      ["https://translate.google.com/translate_a/single", "dict-chrome-ex"],
+    ];
     const googleParams = new URLSearchParams();
     googleParams.append("client", "gtx"); // Google Translate web client
     googleParams.append(
@@ -55,16 +65,11 @@ export async function translateWithGoogle(
     };
 
     let googleResponse: Response | undefined;
-    for (const [hostname, client] of [
-      ["translate.googleapis.com", "gtx"],
-      ["translate.google.com", "gtx"],
-      ["translate.googleapis.com", "dict-chrome-ex"],
-    ]) {
-      googleApiUrl.hostname = hostname;
+    for (const [endpoint, client] of attempts) {
       googleParams.set("client", client);
       requestInit.body = googleParams.toString();
       try {
-        googleResponse = await fetch(googleApiUrl.toString(), requestInit);
+        googleResponse = await fetch(endpoint, requestInit);
         if (googleResponse.ok) break;
       } catch {
         // Try the compatible fallback host.

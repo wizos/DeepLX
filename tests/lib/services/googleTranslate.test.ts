@@ -76,6 +76,25 @@ describe("Google Translate Service", () => {
       expect(result.data).toBeNull();
     });
 
+    it("should prefer an XDPL proxy when configured", async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: () =>
+          Promise.resolve([[["Hola", "Hello", null, null, 10]], null, "en"]),
+      });
+
+      const result = await translateWithGoogle(
+        { text: "Hello", source_lang: "en", target_lang: "es" },
+        { env: { PROXY_URLS: "https://0.example.com/jsonrpc" } }
+      );
+
+      expect(result.code).toBe(200);
+      expect(fetch).toHaveBeenCalledWith(
+        "https://0.example.com/google/translate_a/single",
+        expect.any(Object)
+      );
+    });
+
     it("should use the compatible host when the primary is unavailable", async () => {
       global.fetch = jest
         .fn()
@@ -96,7 +115,7 @@ describe("Google Translate Service", () => {
       expect(result.code).toBe(200);
       expect(fetch).toHaveBeenCalledTimes(3);
       expect(fetch).toHaveBeenLastCalledWith(
-        expect.stringContaining("translate.googleapis.com"),
+        expect.stringContaining("translate.google.com"),
         expect.objectContaining({
           body: expect.stringContaining("client=dict-chrome-ex"),
         })
