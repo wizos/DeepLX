@@ -94,6 +94,12 @@ function normalizeDeepLErrorCode(errorCode: number): number {
   return [1042911, 1042912, 1042513].includes(errorCode) ? 429 : errorCode;
 }
 
+function isRetryableDeepLError(error: any): boolean {
+  const upstreamRateLimit =
+    error?.upstream && (error?.status === 429 || error?.code === 429);
+  return !upstreamRateLimit && isRetryableError(error);
+}
+
 /**
  * Build request parameters for DeepL API
  * Creates the structured request object with language settings
@@ -295,7 +301,7 @@ async function query(
 
   const retryOptions: RetryOptions = {
     ...DEFAULT_RETRY_CONFIG,
-    isRetryable: isRetryableError,
+    isRetryable: isRetryableDeepLError,
   };
 
   try {
@@ -364,6 +370,7 @@ async function query(
               "Too many requests, your IP has been blocked by DeepL temporarily, please don't request it frequently in a short time"
             );
             (error as any).status = 429;
+            (error as any).upstream = true;
             throw error;
           }
 
@@ -468,6 +475,7 @@ async function query(
         const error = new Error(enhancedMessage);
         (error as any).code = normalizeDeepLErrorCode(errorCode);
         (error as any).originalMessage = errorMessage;
+        (error as any).upstream = true;
         throw error;
       }
 
@@ -508,6 +516,7 @@ async function query(
 
 export {
   buildRequestBody,
+  isRetryableDeepLError,
   normalizeDeepLErrorCode,
   normalizeLanguageCode,
   query,

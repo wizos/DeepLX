@@ -4,6 +4,7 @@
 
 import {
   buildRequestBody,
+  isRetryableDeepLError,
   normalizeDeepLErrorCode,
   normalizeLanguageCode,
   query,
@@ -46,6 +47,12 @@ describe("Query Module", () => {
   it("should normalize XDPL rate-limit error codes", () => {
     expect(normalizeDeepLErrorCode(1042911)).toBe(429);
     expect(normalizeDeepLErrorCode(1156049)).toBe(1156049);
+  });
+
+  it("should fall back immediately on rate limits", () => {
+    expect(isRetryableDeepLError({ code: 429, upstream: true })).toBe(false);
+    expect(isRetryableDeepLError({ code: 429 })).toBe(true);
+    expect(isRetryableDeepLError({ status: 503 })).toBe(true);
   });
 
   describe("buildRequestBody", () => {
