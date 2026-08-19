@@ -90,6 +90,10 @@ function normalizeLanguageCode(langCode: string): string {
   return normalized.toUpperCase();
 }
 
+function normalizeDeepLErrorCode(errorCode: number): number {
+  return [1042911, 1042912, 1042513].includes(errorCode) ? 429 : errorCode;
+}
+
 /**
  * Build request parameters for DeepL API
  * Creates the structured request object with language settings
@@ -446,6 +450,7 @@ async function query(
               "4) Unsupported language codes. " +
               "Please verify your request parameters and try again.";
             break;
+          case 1042911:
           case 1042912:
             enhancedMessage = "Too many requests. Please try again later.";
             break;
@@ -461,7 +466,7 @@ async function query(
         }
 
         const error = new Error(enhancedMessage);
-        (error as any).code = errorCode;
+        (error as any).code = normalizeDeepLErrorCode(errorCode);
         (error as any).originalMessage = errorMessage;
         throw error;
       }
@@ -501,4 +506,9 @@ async function query(
   }
 }
 
-export { buildRequestBody, normalizeLanguageCode, query };
+export {
+  buildRequestBody,
+  normalizeDeepLErrorCode,
+  normalizeLanguageCode,
+  query,
+};

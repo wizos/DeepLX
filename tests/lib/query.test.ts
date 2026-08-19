@@ -4,6 +4,7 @@
 
 import {
   buildRequestBody,
+  normalizeDeepLErrorCode,
   normalizeLanguageCode,
   query,
 } from "../../src/lib/query";
@@ -40,6 +41,11 @@ describe("Query Module", () => {
       expect(normalizeLanguageCode("AUTO")).toBe("auto");
       expect(normalizeLanguageCode("unknown")).toBe("UNKNOWN");
     });
+  });
+
+  it("should normalize XDPL rate-limit error codes", () => {
+    expect(normalizeDeepLErrorCode(1042911)).toBe(429);
+    expect(normalizeDeepLErrorCode(1156049)).toBe(1156049);
   });
 
   describe("buildRequestBody", () => {
