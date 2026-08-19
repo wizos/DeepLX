@@ -80,6 +80,7 @@ describe("Google Translate Service", () => {
       global.fetch = jest
         .fn()
         .mockResolvedValueOnce({ ok: false, status: 429 })
+        .mockResolvedValueOnce({ ok: false, status: 429 })
         .mockResolvedValueOnce({
           ok: true,
           json: () =>
@@ -93,10 +94,12 @@ describe("Google Translate Service", () => {
       });
 
       expect(result.code).toBe(200);
-      expect(fetch).toHaveBeenCalledTimes(2);
+      expect(fetch).toHaveBeenCalledTimes(3);
       expect(fetch).toHaveBeenLastCalledWith(
-        expect.stringContaining("translate.google.com"),
-        expect.any(Object)
+        expect.stringContaining("translate.googleapis.com"),
+        expect.objectContaining({
+          body: expect.stringContaining("client=dict-chrome-ex"),
+        })
       );
     });
 
